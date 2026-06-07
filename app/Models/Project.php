@@ -11,6 +11,7 @@ class Project extends Model
         'name',
         'slug',
         'description',
+        'location',
         'active',
     ];
 
