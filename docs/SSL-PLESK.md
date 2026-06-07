@@ -55,23 +55,37 @@ Zoek: **Permanent SEO-safe 301 redirect from HTTP to HTTPS** → aan → **OK**
 
 ---
 
-## Fallback via `.htaccess` (als Plesk-vinkje ontbreekt)
+## Redirect werkt niet via `.htaccess`
 
-**Alleen als HTTPS al werkt** (stap 2 klaar). SSH:
+Op Plesk regelt **nginx** SSL (niet Apache). Redirect moet in **Plesk**, niet in `.htaccess`.
 
-```bash
-cd ~/httpdocs
-git pull origin main
+### Optie A — Hostinginstellingen
+
+**Hosting & DNS** → **Hostinginstellingen** → **Beveiliging**:
+
+- ✅ SSL/TLS-ondersteuning
+- Certificaat: **Lets Encrypt greidefugels.nl**
+- ✅ Permanent SEO-safe 301 redirect from HTTP to HTTPS
+- **OK**
+
+### Optie B — Apache & nginx-instellingen
+
+**Hosting & DNS** → **Apache & nginx-instellingen**:
+
+- ✅ **Redirect from HTTP to HTTPS** (of SEO-safe 301)
+- **OK**
+
+Daarna **webservices herstarten** (knop op die pagina) of Plesk → **Services management** → nginx/apache restart.
+
+### Test
+
+```powershell
+curl -I http://greidefugels.nl
 ```
 
-De repo bevat redirect-regels in `public/.htaccess`.
+Moet bevatten: `301` en `Location: https://greidefugels.nl/`
 
-Of handmatig bovenaan `public/.htaccess` (onder `RewriteEngine On`):
-
-```apache
-RewriteCond %{HTTPS} off
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-```
+Browser: **https://greidefugels.nl/test.html** (met https, niet http).
 
 ---
 
