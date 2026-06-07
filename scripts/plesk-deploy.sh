@@ -30,18 +30,35 @@ else
   exit 1
 fi
 
-bash scripts/setup-production-env.sh
+# Server-only DB-wachtwoord (niet in git). Zie .env.db.local.example
+if [[ -f "$ROOT/.env.db.local" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$ROOT/.env.db.local"
+  set +a
+  bash scripts/setup-production-env.sh "${DB_DATABASE:-greidefugels}" "${DB_USERNAME:-greidefugels}" "${DB_PASSWORD:?DB_PASSWORD ontbreekt in .env.db.local}"
+else
+  bash scripts/setup-production-env.sh
+fi
 
-if [[ ! -f database/database.sqlite ]]; then
-  mkdir -p database
-  touch database/database.sqlite
+"$PHP_BIN" artisan config:clear
+
+if ! "$PHP_BIN" artisan migrate:status --no-interaction >/dev/null 2>&1; then
+  echo ""
+  echo "MySQL niet bereikbaar. Eenmalig op de server:"
+  echo "  cp .env.db.local.example .env.db.local"
+  echo "  nano .env.db.local    # wachtwoord uit Plesk → Databases"
+  echo "  bash scripts/plesk-deploy.sh"
+  echo ""
+  echo "Of direct:"
+  echo "  bash scripts/setup-production-env.sh greidefugels greidefugels 'PLESK_WACHTWOORD'"
+  exit 1
 fi
 
 "$PHP_BIN" artisan migrate --force
 "$PHP_BIN" artisan db:seed --force
 "$PHP_BIN" artisan storage:link --force 2>/dev/null || true
 
-"$PHP_BIN" artisan config:clear
 "$PHP_BIN" artisan view:clear
 "$PHP_BIN" artisan config:cache
 

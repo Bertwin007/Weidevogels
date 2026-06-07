@@ -12,12 +12,12 @@ LOG_CHANNEL=stack
 LOG_STACK=single
 LOG_LEVEL=warning
 
-# Start zonder database — later MySQL invullen
-DB_CONNECTION=sqlite
-DB_HOST=localhost
+# Productie: MySQL via Plesk (geen SQLite — rechtenproblemen op shared hosting)
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=
-DB_USERNAME=
+DB_DATABASE=greidefugels
+DB_USERNAME=greidefugels
 DB_PASSWORD=
 
 SESSION_DRIVER=file

@@ -4,16 +4,33 @@
 
 - **Git deploy-pad:** `httpdocs` (hele repo, **niet** `httpdocs/public`)
 - **Document root:** `httpdocs/public`
-- Git: `Weidevogels` branch `main`
-- SSL: Let's Encrypt (geen wildcard)
-- Redirect: Hostinginstellingen of Apache & nginx → HTTP naar HTTPS
+- **Database:** MySQL via Plesk (geen SQLite op productie)
 - **Acties na deployment:** `bash httpdocs/scripts/plesk-deploy.sh`
 
-Plesk roept `artisan` soms aan vanuit `public/`. Daarvoor staat `public/artisan` in de repo — die verwijst naar de echte `artisan` en `vendor/` in `httpdocs`.
+## Eerste keer: MySQL koppelen
 
-### Fout: `public/vendor/autoload.php` niet gevonden
+1. Plesk → **Databases** → database `greidefugels` + user `greidefugels` (of bestaande gebruiken)
+2. SSH:
 
-`composer install` is nog niet (goed) gedraaid. Oplossing:
+```bash
+cd ~/httpdocs
+git pull origin main
+cp .env.db.local.example .env.db.local
+nano .env.db.local
+# DB_PASSWORD = wachtwoord uit Plesk
+bash scripts/plesk-deploy.sh
+```
+
+Alternatief zonder bestand:
+
+```bash
+bash scripts/setup-production-env.sh greidefugels greidefugels 'PLESK_WACHTWOORD'
+bash scripts/plesk-deploy.sh
+```
+
+`.env.db.local` staat in `.gitignore` — wachtwoord komt nooit in GitHub.
+
+## Volgende deploys
 
 ```bash
 cd ~/httpdocs
@@ -21,30 +38,17 @@ git pull origin main
 bash scripts/plesk-deploy.sh
 ```
 
-## SSH (user greidefugels)
-
-```bash
-cd ~/httpdocs
-git pull origin main
-bash scripts/plesk-deploy.sh
-# Of met MySQL: na setup-production-env handmatig DB-gegevens, of pas het script aan
-```
-
-Handmatig (zelfde als het script):
-
-```bash
-composer install --no-dev --optimize-autoloader
-bash scripts/setup-production-env.sh
-php artisan config:clear && php artisan view:clear && php artisan config:cache
-chmod -R ug+rwx storage bootstrap/cache
-```
-
-## Test
-
-- https://greidefugels.nl (Laravel testpagina)
-- https://greidefugels.nl/test.html (statische fallback)
+MySQL-gegevens blijven bewaard in `.env` (script overschrijft ze niet meer).
 
 ## Veelvoorkomend
 
-- Apache 500 → `.htaccess` zonder `Options -Indexes` (staat goed in repo)
-- Git conflict → `git fetch origin && git reset --hard origin/main`
+| Fout | Oplossing |
+|---|---|
+| `unable to open database file` | Oude SQLite-.env → bovenstaande MySQL-stappen |
+| `public/vendor/autoload.php` | `bash scripts/plesk-deploy.sh` (composer install) |
+| Git conflict | `git fetch origin && git reset --hard origin/main` |
+
+## Test
+
+- https://greidefugels.nl
+- https://greidefugels.nl/upload
