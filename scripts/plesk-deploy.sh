@@ -57,7 +57,17 @@ fi
 
 "$PHP_BIN" artisan migrate --force
 "$PHP_BIN" artisan db:seed --force
-"$PHP_BIN" artisan storage:link --force 2>/dev/null || true
+
+# Symlink: artisan faalt als public/storage al bestaat — handmatig is betrouwbaarder op Plesk
+mkdir -p storage/app/public
+if [[ -L public/storage ]]; then
+  :
+elif [[ -e public/storage ]]; then
+  rm -rf public/storage
+  ln -sfn ../storage/app/public public/storage
+elif [[ ! -e public/storage ]]; then
+  ln -sfn ../storage/app/public public/storage
+fi
 
 mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs
 chmod -R ug+rwx storage bootstrap/cache 2>/dev/null || true
