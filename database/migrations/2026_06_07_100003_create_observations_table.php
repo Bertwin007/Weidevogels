@@ -32,25 +32,44 @@ return new class extends Migration
 
     private function upgradeExistingTable(): void
     {
-        Schema::table('observations', function (Blueprint $table) {
-            if (! Schema::hasColumn('observations', 'guest_name')) {
-                $table->string('guest_name')->nullable()->after('user_id');
-            }
-            if (! Schema::hasColumn('observations', 'guest_email')) {
-                $table->string('guest_email')->nullable()->after('guest_name');
-            }
-            if (! Schema::hasColumn('observations', 'contributor_note')) {
-                $table->text('contributor_note')->nullable()->after('photo_path');
-            }
-            if (! Schema::hasColumn('observations', 'exif_taken_at')) {
-                $table->timestamp('exif_taken_at')->nullable()->after('contributor_note');
-            }
-            if (! Schema::hasColumn('observations', 'slug')) {
-                $table->string('slug')->nullable()->unique()->after('status');
-            }
-            if (! Schema::hasColumn('observations', 'published_at')) {
-                $table->timestamp('published_at')->nullable()->after('slug');
-            }
+        $this->addStringColumn('observations', 'guest_name');
+        $this->addStringColumn('observations', 'guest_email');
+        $this->addTextColumn('observations', 'contributor_note');
+        $this->addTimestampColumn('observations', 'exif_taken_at');
+        $this->addStringColumn('observations', 'slug');
+        $this->addTimestampColumn('observations', 'published_at');
+    }
+
+    private function addStringColumn(string $table, string $column): void
+    {
+        if (Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        Schema::table($table, function (Blueprint $blueprint) use ($column) {
+            $blueprint->string($column)->nullable();
+        });
+    }
+
+    private function addTextColumn(string $table, string $column): void
+    {
+        if (Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        Schema::table($table, function (Blueprint $blueprint) use ($column) {
+            $blueprint->text($column)->nullable();
+        });
+    }
+
+    private function addTimestampColumn(string $table, string $column): void
+    {
+        if (Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        Schema::table($table, function (Blueprint $blueprint) use ($column) {
+            $blueprint->timestamp($column)->nullable();
         });
     }
 
