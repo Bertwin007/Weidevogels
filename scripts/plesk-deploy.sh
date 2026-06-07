@@ -32,6 +32,15 @@ fi
 
 bash scripts/setup-production-env.sh
 
+if [[ ! -f database/database.sqlite ]]; then
+  mkdir -p database
+  touch database/database.sqlite
+fi
+
+"$PHP_BIN" artisan migrate --force
+"$PHP_BIN" artisan db:seed --force
+"$PHP_BIN" artisan storage:link --force 2>/dev/null || true
+
 "$PHP_BIN" artisan config:clear
 "$PHP_BIN" artisan view:clear
 "$PHP_BIN" artisan config:cache
