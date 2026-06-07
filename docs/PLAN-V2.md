@@ -50,9 +50,9 @@ _Wat moet greidefugels.nl voor bezoekers doen?_
 ## 6. Fases
 
 ### Fase A — nu
-- [ ] Laravel live op greidefugels.nl
-- [ ] Eenvenvoudige homepage (merk + uitleg)
-- [ ] SSL OK
+- [x] Laravel live op greidefugels.nl
+- [x] Eenvoudige homepage (merk + uitleg)
+- [x] SSL OK
 
 ### Fase B — MVP
 - [ ] …
