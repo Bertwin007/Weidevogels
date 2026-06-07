@@ -41,9 +41,9 @@
 </head>
 <body>
     <main>
-        <h1>greidefugels.nl werkt</h1>
-        <p>Dit is een testpagina vanaf scratch.</p>
-        <p>Laravel {{ app()->version() }} · PHP {{ PHP_VERSION }}</p>
+            <h1>greidefugels.nl werkt</h1>
+            <p>Laravel {{ app()->version() }} draait op productie.</p>
+            <p>Platform v2 — we ontwerpen opnieuw vanaf scratch.</p>
         <span class="ok">Deploy OK</span>
         <small>{{ now()->timezone('Europe/Amsterdam')->format('d-m-Y H:i') }} (NL)</small>
     </main>
