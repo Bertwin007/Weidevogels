@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class LegacyRecordMapper
 {
@@ -10,7 +12,7 @@ class LegacyRecordMapper
      * @param  array<string, mixed>  $attributes
      * @return array<string, mixed>
      */
-    public static function observationAttributes(array $attributes): array
+    public static function observationAttributes(array $attributes, ?UploadedFile $file = null): array
     {
         if (($attributes['status'] ?? null) === 'pending_annotation') {
             $attributes['status'] = 'pending';
@@ -29,7 +31,27 @@ class LegacyRecordMapper
             $attributes['contributor_type'] = 'guest';
         }
 
-        return $attributes;
+        if ($file) {
+            if (Schema::hasColumn('observations', 'original_filename')) {
+                $attributes['original_filename'] = $file->getClientOriginalName();
+            }
+            if (Schema::hasColumn('observations', 'mime_type')) {
+                $attributes['mime_type'] = $file->getMimeType() ?: 'image/jpeg';
+            }
+            if (Schema::hasColumn('observations', 'file_size')) {
+                $attributes['file_size'] = $file->getSize();
+            }
+        }
+
+        if (Schema::hasColumn('observations', 'uuid') && empty($attributes['uuid'])) {
+            $attributes['uuid'] = (string) Str::uuid();
+        }
+
+        if (Schema::hasColumn('observations', 'source') && empty($attributes['source'])) {
+            $attributes['source'] = 'web';
+        }
+
+        return self::filterColumns('observations', $attributes);
     }
 
     /**
@@ -61,7 +83,18 @@ class LegacyRecordMapper
             unset($attributes['annotator_id']);
         }
 
-        return $attributes;
+        return self::filterColumns('annotations', $attributes);
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
+    private static function filterColumns(string $table, array $attributes): array
+    {
+        $columns = Schema::getColumnListing($table);
+
+        return array_intersect_key($attributes, array_flip($columns));
     }
 
     public static function parseCount(string $value): int

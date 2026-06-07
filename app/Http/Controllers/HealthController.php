@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Observation;
 use App\Services\LegacyRecordMapper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 
 class HealthController extends Controller
 {
@@ -16,22 +18,31 @@ class HealthController extends Controller
             'db' => false,
             'legacy_mapper' => class_exists(LegacyRecordMapper::class),
             'storage_writable' => is_writable(storage_path('logs')),
+            'storage_app_writable' => is_writable(storage_path('app/public')),
             'sessions_writable' => is_writable(storage_path('framework/sessions')),
             'views_writable' => is_writable(storage_path('framework/views')),
             'public_storage_link' => is_link(public_path('storage')) || is_dir(public_path('storage')),
+            'pending_uploads' => 0,
+            'last_error' => $this->lastErrorMessage(),
         ];
 
         try {
             DB::connection()->getPdo();
             DB::select('select 1 as ok');
             $checks['db'] = true;
-        } catch (\Throwable) {
-            $checks['db'] = false;
+            $checks['pending_uploads'] = Observation::pendingAnnotation()->count();
+
+            if (Schema::hasTable('observations')) {
+                $checks['observation_columns'] = Schema::getColumnListing('observations');
+            }
+            if (Schema::hasTable('annotations')) {
+                $checks['annotation_columns'] = Schema::getColumnListing('annotations');
+            }
+        } catch (\Throwable $e) {
+            $checks['db_error'] = $e->getMessage();
         }
 
-        $checks['log_tail'] = $this->lastLogLines();
-
-        $ok = $checks['app_key'] && $checks['db'] && $checks['storage_writable'];
+        $ok = $checks['app_key'] && $checks['db'] && $checks['storage_writable'] && $checks['legacy_mapper'];
 
         return response()->json([
             'ok' => $ok,
@@ -39,20 +50,24 @@ class HealthController extends Controller
         ], $ok ? 200 : 500);
     }
 
-    /**
-     * @return list<string>
-     */
-    private function lastLogLines(): array
+    private function lastErrorMessage(): ?string
     {
         $log = storage_path('logs/laravel.log');
 
         if (! File::exists($log)) {
-            return [];
+            return null;
         }
 
-        $lines = file($log, FILE_IGNORE_NEW_LINES) ?: [];
-        $errorLines = array_values(array_filter($lines, fn (string $line) => str_contains($line, '.ERROR:')));
+        $content = File::get($log);
+        $pos = strrpos($content, '.ERROR:');
 
-        return array_slice($errorLines !== [] ? $errorLines : $lines, -5);
+        if ($pos === false) {
+            return null;
+        }
+
+        $start = strrpos(substr($content, 0, $pos), "\n");
+        $start = $start === false ? 0 : $start + 1;
+
+        return trim(substr($content, $start, 1200));
     }
 }

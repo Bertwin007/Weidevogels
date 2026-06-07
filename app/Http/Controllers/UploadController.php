@@ -54,7 +54,7 @@ class UploadController extends Controller
                 'contributor_note' => $validated['contributor_note'] ?? null,
                 'exif_taken_at' => $takenAt,
                 'status' => 'pending',
-            ]);
+            ], $validated['photo']);
 
             $project->observations()->create($attributes);
         } catch (\Throwable $e) {
