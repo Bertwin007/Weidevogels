@@ -40,7 +40,7 @@ class UploadController extends Controller
             'photo_path' => $path,
             'contributor_note' => $validated['contributor_note'] ?? null,
             'exif_taken_at' => $takenAt,
-            'status' => ObservationStatus::PendingAnnotation,
+            'status' => ObservationStatus::PendingAnnotation->value,
         ]);
 
         return redirect()

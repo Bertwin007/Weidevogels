@@ -27,10 +27,10 @@
                 @foreach($observations as $observation)
                     <tr>
                         <td>{{ $observation->id }}</td>
-                        <td><span class="badge">{{ $observation->status->value }}</span></td>
+                        <td><span class="badge">{{ $observation->statusValue() }}</span></td>
                         <td>{{ $observation->annotation?->story_line ?? '—' }}</td>
                         <td>
-                            @if($observation->status->value === 'published')
+                            @if($observation->isPublished())
                                 <a href="{{ route('moments.show', $observation) }}">Bekijk</a>
                                 ·
                                 <form action="{{ route('admin.unpublish', $observation) }}" method="post" style="display:inline">

@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <article>
-        <p class="meta">{{ $observation->project->name }} · {{ $observation->published_at?->format('d F Y') }}</p>
+        <p class="meta">{{ $observation->project?->name ?? 'Ljippelân' }} · {{ $observation->published_at?->format('d F Y') }}</p>
         <h1>{{ $observation->annotation?->story_line }}</h1>
 
         <img src="{{ $observation->photo_url }}" alt="" style="width:100%;max-height:32rem;object-fit:cover;border-radius:0.75rem;margin:1rem 0 1.5rem">

@@ -26,10 +26,29 @@ class Observation extends Model
     protected function casts(): array
     {
         return [
-            'status' => ObservationStatus::class,
             'exif_taken_at' => 'datetime',
             'published_at' => 'datetime',
         ];
+    }
+
+    public function statusValue(): string
+    {
+        return (string) ($this->attributes['status'] ?? ObservationStatus::PendingAnnotation->value);
+    }
+
+    public function isPublished(): bool
+    {
+        return in_array($this->statusValue(), ['published', 'approved'], true);
+    }
+
+    public function isPendingAnnotation(): bool
+    {
+        return in_array($this->statusValue(), [
+            ObservationStatus::PendingAnnotation->value,
+            'pending',
+            'pending_annotation',
+            'processing_ai',
+        ], true);
     }
 
     public function project(): BelongsTo
@@ -49,12 +68,17 @@ class Observation extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', ObservationStatus::Published);
+        return $query->whereIn('status', ['published', 'approved']);
     }
 
     public function scopePendingAnnotation($query)
     {
-        return $query->where('status', ObservationStatus::PendingAnnotation);
+        return $query->whereIn('status', [
+            ObservationStatus::PendingAnnotation->value,
+            'pending',
+            'pending_annotation',
+            'processing_ai',
+        ]);
     }
 
     public function getRouteKeyName(): string
@@ -64,7 +88,9 @@ class Observation extends Model
 
     public function getPhotoUrlAttribute(): string
     {
-        return asset('storage/'.$this->photo_path);
+        $path = $this->attributes['photo_path'] ?? $this->attributes['image_path'] ?? null;
+
+        return $path ? asset('storage/'.$path) : '';
     }
 
     public function getContributorLabelAttribute(): string
@@ -78,7 +104,7 @@ class Observation extends Model
         $slug = $base !== '' ? $base.'-'.$this->id : 'moment-'.$this->id;
 
         $this->update([
-            'status' => ObservationStatus::Published,
+            'status' => ObservationStatus::Published->value,
             'slug' => $slug,
             'published_at' => now(),
         ]);
@@ -87,7 +113,7 @@ class Observation extends Model
     public function markNotPublishable(): void
     {
         $this->update([
-            'status' => ObservationStatus::NotPublishable,
+            'status' => ObservationStatus::NotPublishable->value,
             'published_at' => null,
             'slug' => null,
         ]);
@@ -96,7 +122,7 @@ class Observation extends Model
     public function unpublish(): void
     {
         $this->update([
-            'status' => ObservationStatus::Unpublished,
+            'status' => ObservationStatus::Unpublished->value,
         ]);
     }
 }

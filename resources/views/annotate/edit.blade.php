@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <h1>Foto verrijken</h1>
-    <p class="lead">{{ $observation->project->name }} · geüpload {{ $observation->created_at->format('d-m-Y') }}</p>
+    <p class="lead">{{ $observation->project?->name ?? 'Ljippelân' }} · geüpload {{ $observation->created_at->format('d-m-Y') }}</p>
 
     @if($observation->contributor_note)
         <p><strong>Toelichting uploader:</strong> {{ $observation->contributor_note }}</p>

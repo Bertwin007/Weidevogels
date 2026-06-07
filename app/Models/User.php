@@ -22,17 +22,23 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role' => UserRole::class,
         ];
+    }
+
+    public function roleValue(): string
+    {
+        $role = $this->attributes['role'] ?? 'annotator';
+
+        return is_string($role) ? $role : UserRole::Annotator->value;
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === UserRole::Admin;
+        return $this->roleValue() === UserRole::Admin->value;
     }
 
     public function isAnnotator(): bool
     {
-        return $this->role === UserRole::Annotator || $this->isAdmin();
+        return in_array($this->roleValue(), [UserRole::Annotator->value, UserRole::Admin->value], true);
     }
 }

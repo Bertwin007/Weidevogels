@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ObservationStatus;
 use App\Models\Observation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +22,7 @@ class AnnotateController extends Controller
 
     public function edit(Observation $observation): View|RedirectResponse
     {
-        if ($observation->status !== ObservationStatus::PendingAnnotation) {
+        if (! $observation->isPendingAnnotation()) {
             return redirect()
                 ->route('annotate.index')
                 ->with('info', 'Dit moment is al verwerkt.');
@@ -36,7 +35,7 @@ class AnnotateController extends Controller
 
     public function store(Request $request, Observation $observation): RedirectResponse
     {
-        if ($observation->status !== ObservationStatus::PendingAnnotation) {
+        if (! $observation->isPendingAnnotation()) {
             return redirect()->route('annotate.index');
         }
 

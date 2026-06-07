@@ -21,9 +21,13 @@ class EnsureUserHasRole
         }
 
         foreach ($roles as $role) {
-            $expected = $role instanceof UserRole ? $role : UserRole::from($role);
+            $expected = $role instanceof UserRole ? $role->value : UserRole::from($role)->value;
 
-            if ($user->role === $expected || ($expected === UserRole::Annotator && $user->isAdmin())) {
+            if ($user->roleValue() === $expected) {
+                return $next($request);
+            }
+
+            if ($expected === UserRole::Annotator->value && $user->isAdmin()) {
                 return $next($request);
             }
         }

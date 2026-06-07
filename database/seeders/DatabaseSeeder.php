@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'ANF Beheerder',
                 'password' => Hash::make('password'),
-                'role' => UserRole::Admin,
+                'role' => UserRole::Admin->value,
             ]
         );
 
@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Vrijwilliger Annotator',
                 'password' => Hash::make('password'),
-                'role' => UserRole::Annotator,
+                'role' => UserRole::Annotator->value,
             ]
         );
     }

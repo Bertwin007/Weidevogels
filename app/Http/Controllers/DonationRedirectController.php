@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ObservationStatus;
 use App\Models\DonationClick;
 use App\Models\Observation;
 use Illuminate\Http\RedirectResponse;
@@ -17,7 +16,7 @@ class DonationRedirectController extends Controller
 
     public function moment(Request $request, Observation $observation): RedirectResponse
     {
-        if ($observation->status !== ObservationStatus::Published) {
+        if ($observation->statusValue() !== 'published' && $observation->statusValue() !== 'approved') {
             abort(404);
         }
 

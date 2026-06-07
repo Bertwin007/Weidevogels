@@ -59,9 +59,10 @@ fi
 "$PHP_BIN" artisan db:seed --force
 "$PHP_BIN" artisan storage:link --force 2>/dev/null || true
 
+mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs
+chmod -R ug+rwx storage bootstrap/cache 2>/dev/null || true
+
 "$PHP_BIN" artisan view:clear
 "$PHP_BIN" artisan config:cache
-
-chmod -R ug+rwx storage bootstrap/cache 2>/dev/null || true
 
 echo "Deploy klaar: ${ROOT}"

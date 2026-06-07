@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ObservationStatus;
 use App\Models\Observation;
 use Illuminate\View\View;
 
@@ -21,7 +20,7 @@ class MomentController extends Controller
 
     public function show(Observation $observation): View
     {
-        if ($observation->status !== ObservationStatus::Published) {
+        if ($observation->statusValue() !== 'published' && $observation->statusValue() !== 'approved') {
             abort(404);
         }
 

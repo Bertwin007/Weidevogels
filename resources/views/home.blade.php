@@ -36,7 +36,7 @@
                     <img src="{{ $moment->photo_url }}" alt="">
                     <div class="card-body">
                         <h3>{{ $moment->annotation?->story_line }}</h3>
-                        <p>{{ $moment->annotation?->species }} · {{ $moment->project->name }}</p>
+                        <p>{{ $moment->annotation?->species }} · {{ $moment->project?->name ?? 'Ljippelân' }}</p>
                     </div>
                 </a>
             @endforeach
