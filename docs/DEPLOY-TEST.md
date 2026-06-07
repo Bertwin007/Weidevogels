@@ -2,42 +2,44 @@
 
 ## Wat je ziet
 
-Homepage toont: **greidefugels.nl werkt** (groene testpagina, geen database nodig).
+- **https://greidefugels.nl** → testpagina (Laravel of statische fallback)
+- **https://greidefugels.nl/test.html** → altijd statisch, geen Laravel nodig
 
-## Plesk
+## Plesk (belangrijk)
 
-1. **Git** → `https://github.com/Bertwin007/Weidevogels.git` → branch `main` → **Deploy now**
-2. **Document root** → `httpdocs/public`
-3. SSH als user **greidefugels**:
+1. **Document root** = `httpdocs/public` (niet alleen `httpdocs`)
+2. **Git** → Deploy now (branch `main`)
+
+## Minimale deploy (statisch testen)
+
+SSH als **greidefugels**:
 
 ```bash
 cd ~/httpdocs
+git pull origin main
+```
+
+Open direct: **https://greidefugels.nl/test.html**
+
+Werkt dat? → server OK. Daarna Laravel afmaken:
+
+```bash
 composer install --no-dev --optimize-autoloader
 cp .env.example .env
 php artisan key:generate --force
-```
-
-In `.env` minimaal:
-
-```env
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://greidefugels.nl
-```
-
-```bash
+# .env: APP_URL=https://greidefugels.nl, APP_DEBUG=false
 php artisan config:cache
 chmod -R ug+rwx storage bootstrap/cache
 ```
 
-4. **PHP opnieuw starten** in Plesk → site openen: https://greidefugels.nl
+## Werkt test.html ook niet?
 
-## Ultra-snelle test (zonder Laravel)
+→ Document root of domein wijst niet naar `httpdocs/public`. In Plesk **Hostinginstellingen** controleren.
 
-Als Apache 500 blijft, tijdelijk in SSH:
+## Ultra-check
 
 ```bash
-echo 'OK greidefugels.nl' > ~/httpdocs/public/ping.txt
+echo OK > ~/httpdocs/public/ping.txt
 ```
 
-Open https://greidefugels.nl/ping.txt — werkt dat wel, dan is Laravel/config het probleem.
+Open **https://greidefugels.nl/ping.txt**
