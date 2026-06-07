@@ -34,12 +34,29 @@ chmod -R ug+rwx storage bootstrap/cache
 
 ## Werkt test.html ook niet?
 
-→ Document root of domein wijst niet naar `httpdocs/public`. In Plesk **Hostinginstellingen** controleren.
+Meestal **kapotte `.htaccess`** (Apache 500 op álle bestanden) of verkeerde document root.
 
-## Ultra-check
+### Snel fix op server (SSH)
 
 ```bash
-echo OK > ~/httpdocs/public/ping.txt
+cd ~/httpdocs/public
+mv .htaccess .htaccess.bak
+echo OK > ping.txt
 ```
 
-Open **https://greidefugels.nl/ping.txt**
+Open **https://greidefugels.nl/ping.txt** — werkt dat? → `.htaccess` was de oorzaak. Daarna:
+
+```bash
+cd ~/httpdocs
+git pull origin main
+```
+
+(de repo heeft een Plesk-veilige `.htaccess` zonder `Options -Indexes`)
+
+### Document root
+
+Moet **`httpdocs/public`** zijn (niet alleen `httpdocs`).
+
+### Apache error log
+
+Plesk → greidefugels.nl → **Logs** → Apache error — zoek regels met `.htaccess` of `Options`.
