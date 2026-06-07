@@ -32,6 +32,7 @@
     @else
         <div class="grid-moments">
             @foreach($moments as $moment)
+                @if($moment->slug)
                 <a href="{{ route('moments.show', $moment) }}" class="card moment-card" style="text-decoration:none;color:inherit">
                     <img src="{{ $moment->photo_url }}" alt="">
                     <div class="card-body">
@@ -39,6 +40,7 @@
                         <p>{{ $moment->annotation?->species }} · {{ $moment->project?->name ?? 'Ljippelân' }}</p>
                     </div>
                 </a>
+                @endif
             @endforeach
         </div>
         <p style="margin-top:1.5rem"><a href="{{ route('moments.index') }}">Alle momenten →</a></p>

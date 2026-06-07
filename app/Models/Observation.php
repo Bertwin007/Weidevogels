@@ -68,7 +68,10 @@ class Observation extends Model
 
     public function scopePublished($query)
     {
-        return $query->whereIn('status', ['published', 'approved']);
+        return $query
+            ->whereIn('status', ['published', 'approved'])
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '');
     }
 
     public function scopePendingAnnotation($query)

@@ -30,7 +30,7 @@
                         <td><span class="badge">{{ $observation->statusValue() }}</span></td>
                         <td>{{ $observation->annotation?->story_line ?? '—' }}</td>
                         <td>
-                            @if($observation->isPublished())
+                            @if($observation->isPublished() && $observation->slug)
                                 <a href="{{ route('moments.show', $observation) }}">Bekijk</a>
                                 ·
                                 <form action="{{ route('admin.unpublish', $observation) }}" method="post" style="display:inline">

@@ -12,6 +12,7 @@
     @else
         <div class="grid-moments">
             @foreach($moments as $moment)
+                @if($moment->slug)
                 <a href="{{ route('moments.show', $moment) }}" class="card moment-card" style="text-decoration:none;color:inherit">
                     <img src="{{ $moment->photo_url }}" alt="">
                     <div class="card-body">
@@ -20,6 +21,7 @@
                         <p class="meta">{{ $moment->published_at?->format('d F Y') }}</p>
                     </div>
                 </a>
+                @endif
             @endforeach
         </div>
         {{ $moments->links() }}

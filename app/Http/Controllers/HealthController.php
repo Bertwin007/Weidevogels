@@ -49,7 +49,8 @@ class HealthController extends Controller
         }
 
         $lines = file($log, FILE_IGNORE_NEW_LINES) ?: [];
+        $errorLines = array_values(array_filter($lines, fn (string $line) => str_contains($line, '.ERROR:')));
 
-        return array_slice($lines, -8);
+        return array_slice($errorLines !== [] ? $errorLines : $lines, -5);
     }
 }
