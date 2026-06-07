@@ -8,6 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('annotations')) {
+            $this->upgradeExistingTable();
+
+            return;
+        }
+
         Schema::create('annotations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('observation_id')->unique()->constrained()->cascadeOnDelete();
@@ -20,6 +26,15 @@ return new class extends Migration
             $table->text('caption')->nullable();
             $table->boolean('is_publishable')->default(true);
             $table->timestamps();
+        });
+    }
+
+    private function upgradeExistingTable(): void
+    {
+        Schema::table('annotations', function (Blueprint $table) {
+            if (! Schema::hasColumn('annotations', 'is_publishable')) {
+                $table->boolean('is_publishable')->default(true)->after('caption');
+            }
         });
     }
 

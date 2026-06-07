@@ -8,6 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('observations')) {
+            $this->upgradeExistingTable();
+
+            return;
+        }
+
         Schema::create('observations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
@@ -21,6 +27,30 @@ return new class extends Migration
             $table->string('slug')->nullable()->unique();
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
+        });
+    }
+
+    private function upgradeExistingTable(): void
+    {
+        Schema::table('observations', function (Blueprint $table) {
+            if (! Schema::hasColumn('observations', 'guest_name')) {
+                $table->string('guest_name')->nullable()->after('user_id');
+            }
+            if (! Schema::hasColumn('observations', 'guest_email')) {
+                $table->string('guest_email')->nullable()->after('guest_name');
+            }
+            if (! Schema::hasColumn('observations', 'contributor_note')) {
+                $table->text('contributor_note')->nullable()->after('photo_path');
+            }
+            if (! Schema::hasColumn('observations', 'exif_taken_at')) {
+                $table->timestamp('exif_taken_at')->nullable()->after('contributor_note');
+            }
+            if (! Schema::hasColumn('observations', 'slug')) {
+                $table->string('slug')->nullable()->unique()->after('status');
+            }
+            if (! Schema::hasColumn('observations', 'published_at')) {
+                $table->timestamp('published_at')->nullable()->after('slug');
+            }
         });
     }
 
