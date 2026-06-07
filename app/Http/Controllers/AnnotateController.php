@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Observation;
+use App\Support\LegacyRecordMapper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class AnnotateController extends Controller
@@ -51,9 +53,8 @@ class AnnotateController extends Controller
 
         $isPublishable = $request->boolean('is_publishable');
 
-        $annotation = $observation->annotation()->updateOrCreate(
-            ['observation_id' => $observation->id],
-            [
+        try {
+            $attributes = LegacyRecordMapper::annotationAttributes([
                 'annotator_id' => $request->user()->id,
                 'species' => $validated['species'],
                 'count_label' => $validated['count_label'],
@@ -62,21 +63,32 @@ class AnnotateController extends Controller
                 'story_line' => $validated['story_line'],
                 'caption' => $validated['caption'] ?? null,
                 'is_publishable' => $isPublishable,
-            ]
-        );
+            ]);
 
-        if ($isPublishable) {
-            $observation->publishFromAnnotation($annotation);
+            $annotation = $observation->annotation()->updateOrCreate(
+                ['observation_id' => $observation->id],
+                $attributes
+            );
+
+            if ($isPublishable) {
+                $observation->publishFromAnnotation($annotation);
+
+                return redirect()
+                    ->route('annotate.index')
+                    ->with('success', 'Moment gepubliceerd op de site.');
+            }
+
+            $observation->markNotPublishable();
 
             return redirect()
                 ->route('annotate.index')
-                ->with('success', 'Moment gepubliceerd op de site.');
+                ->with('success', 'Opgeslagen als niet publiceerbaar.');
+        } catch (\Throwable $e) {
+            Log::error('Annotatie mislukt: '.$e->getMessage(), ['exception' => $e, 'observation_id' => $observation->id]);
+
+            return back()
+                ->withErrors(['story_line' => 'Opslaan mislukt: '.$e->getMessage()])
+                ->withInput();
         }
-
-        $observation->markNotPublishable();
-
-        return redirect()
-            ->route('annotate.index')
-            ->with('success', 'Opgeslagen als niet publiceerbaar.');
     }
 }

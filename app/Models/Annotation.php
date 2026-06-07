@@ -7,17 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Annotation extends Model
 {
-    protected $fillable = [
-        'observation_id',
-        'annotator_id',
-        'species',
-        'count_label',
-        'behavior',
-        'season',
-        'story_line',
-        'caption',
-        'is_publishable',
-    ];
+    protected $guarded = ['id'];
 
     protected function casts(): array
     {

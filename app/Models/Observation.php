@@ -16,6 +16,7 @@ class Observation extends Model
         'guest_name',
         'guest_email',
         'photo_path',
+        'image_path',
         'contributor_note',
         'exif_taken_at',
         'status',
@@ -115,8 +116,10 @@ class Observation extends Model
 
     public function markNotPublishable(): void
     {
+        $status = 'rejected';
+
         $this->update([
-            'status' => ObservationStatus::NotPublishable->value,
+            'status' => $status,
             'published_at' => null,
             'slug' => null,
         ]);
