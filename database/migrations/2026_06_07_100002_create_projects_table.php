@@ -9,6 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         if (Schema::hasTable('projects')) {
+            $this->upgradeExistingTable();
+
             return;
         }
 
@@ -20,6 +22,33 @@ return new class extends Migration
             $table->boolean('active')->default(true);
             $table->timestamps();
         });
+    }
+
+    private function upgradeExistingTable(): void
+    {
+        if (! Schema::hasColumn('projects', 'name')) {
+            Schema::table('projects', function (Blueprint $table) {
+                $table->string('name')->nullable();
+            });
+        }
+
+        if (! Schema::hasColumn('projects', 'slug')) {
+            Schema::table('projects', function (Blueprint $table) {
+                $table->string('slug')->nullable();
+            });
+        }
+
+        if (! Schema::hasColumn('projects', 'description')) {
+            Schema::table('projects', function (Blueprint $table) {
+                $table->text('description')->nullable();
+            });
+        }
+
+        if (! Schema::hasColumn('projects', 'active')) {
+            Schema::table('projects', function (Blueprint $table) {
+                $table->boolean('active')->default(true);
+            });
+        }
     }
 
     public function down(): void
