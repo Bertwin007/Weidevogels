@@ -4,6 +4,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+PHP_BIN="${PHP_BIN:-php}"
+if [[ -x /opt/plesk/php/8.5/bin/php ]]; then
+  PHP_BIN=/opt/plesk/php/8.5/bin/php
+elif [[ -x /opt/plesk/php/8.4/bin/php ]]; then
+  PHP_BIN=/opt/plesk/php/8.4/bin/php
+elif [[ -x /opt/plesk/php/8.3/bin/php ]]; then
+  PHP_BIN=/opt/plesk/php/8.3/bin/php
+fi
+
 TEMPLATE=".env.production.greidefugels.nl"
 TARGET=".env"
 
@@ -23,7 +32,7 @@ cp "$TEMPLATE" "$TARGET"
 if [[ -n "$EXISTING_KEY" && "$EXISTING_KEY" != "" ]]; then
   sed -i "s|^APP_KEY=.*|APP_KEY=${EXISTING_KEY}|" "$TARGET"
 else
-  php artisan key:generate --force
+  "$PHP_BIN" artisan key:generate --force
 fi
 
 if [[ $# -ge 3 ]]; then

@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+$root = dirname(__DIR__);
+$autoload = $root.'/vendor/autoload.php';
+
+if (! is_readable($autoload)) {
+    fwrite(STDERR, "Composer dependencies ontbreken in {$root}.\n");
+    fwrite(STDERR, "Voer uit (SSH, map httpdocs):\n");
+    fwrite(STDERR, "  bash scripts/plesk-deploy.sh\n");
+    exit(1);
+}
+
+require $root.'/artisan';
