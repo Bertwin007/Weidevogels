@@ -4,11 +4,13 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\AnnotateController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DonationRedirectController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MomentController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/gezondheid', HealthController::class)->name('health');
 Route::get('/', HomeController::class)->name('home');
 Route::get('/momenten', [MomentController::class, 'index'])->name('moments.index');
 Route::get('/momenten/{observation:slug}', [MomentController::class, 'show'])->name('moments.show');

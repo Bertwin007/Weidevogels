@@ -14,14 +14,24 @@ class UploadController extends Controller
 {
     public function create(): View
     {
-        $project = Project::query()->where('slug', 'ljippelan')->where('active', true)->firstOrFail();
+        $project = Project::query()
+            ->where('slug', 'ljippelan')
+            ->where(function ($query) {
+                $query->where('active', true)->orWhereNull('active');
+            })
+            ->firstOrFail();
 
         return view('upload.create', compact('project'));
     }
 
     public function store(Request $request, ExifService $exif): RedirectResponse
     {
-        $project = Project::query()->where('slug', 'ljippelan')->where('active', true)->firstOrFail();
+        $project = Project::query()
+            ->where('slug', 'ljippelan')
+            ->where(function ($query) {
+                $query->where('active', true)->orWhereNull('active');
+            })
+            ->firstOrFail();
 
         $validated = $request->validate([
             'photo' => ['required', 'image', 'max:10240'],

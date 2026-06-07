@@ -30,7 +30,6 @@ else
   exit 1
 fi
 
-# Server-only DB-wachtwoord (niet in git). Zie .env.db.local.example
 if [[ -f "$ROOT/.env.db.local" ]]; then
   set -a
   # shellcheck disable=SC1091
@@ -41,38 +40,35 @@ else
   bash scripts/setup-production-env.sh
 fi
 
-"$PHP_BIN" artisan config:clear
+"$PHP_BIN" artisan optimize:clear --no-interaction 2>/dev/null || "$PHP_BIN" artisan config:clear
 
 if ! "$PHP_BIN" artisan migrate:status --no-interaction >/dev/null 2>&1; then
   echo ""
   echo "MySQL niet bereikbaar. Eenmalig op de server:"
   echo "  cp .env.db.local.example .env.db.local"
-  echo "  nano .env.db.local    # wachtwoord uit Plesk → Databases"
+  echo "  nano .env.db.local"
   echo "  bash scripts/plesk-deploy.sh"
-  echo ""
-  echo "Of direct:"
-  echo "  bash scripts/setup-production-env.sh greidefugels greidefugels 'PLESK_WACHTWOORD'"
   exit 1
 fi
 
 "$PHP_BIN" artisan migrate --force
 "$PHP_BIN" artisan db:seed --force
 
-# Symlink: artisan faalt als public/storage al bestaat — handmatig is betrouwbaarder op Plesk
 mkdir -p storage/app/public
+mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs
+
 if [[ -L public/storage ]]; then
   :
 elif [[ -e public/storage ]]; then
   rm -rf public/storage
   ln -sfn ../storage/app/public public/storage
-elif [[ ! -e public/storage ]]; then
+else
   ln -sfn ../storage/app/public public/storage
 fi
 
-mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs
-chmod -R ug+rwx storage bootstrap/cache 2>/dev/null || true
-
-"$PHP_BIN" artisan view:clear
-"$PHP_BIN" artisan config:cache
+find storage bootstrap/cache -type d -exec chmod 775 {} + 2>/dev/null || true
+find storage bootstrap/cache -type f -exec chmod 664 {} + 2>/dev/null || true
+chmod -R ug+rwX storage bootstrap/cache 2>/dev/null || true
 
 echo "Deploy klaar: ${ROOT}"
+echo "Test: https://greidefugels.nl/gezondheid"
