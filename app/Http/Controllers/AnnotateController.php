@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Observation;
-use App\Support\LegacyRecordMapper;
+use App\Services\LegacyRecordMapper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

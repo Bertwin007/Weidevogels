@@ -15,6 +15,7 @@ class Observation extends Model
         'user_id',
         'guest_name',
         'guest_email',
+        'contributor_type',
         'photo_path',
         'image_path',
         'contributor_note',

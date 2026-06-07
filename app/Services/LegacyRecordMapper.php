@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Services;
 
 use Illuminate\Support\Facades\Schema;
 
@@ -25,6 +25,10 @@ class LegacyRecordMapper
             unset($attributes['photo_path']);
         }
 
+        if (Schema::hasColumn('observations', 'contributor_type') && ! isset($attributes['contributor_type'])) {
+            $attributes['contributor_type'] = 'guest';
+        }
+
         return $attributes;
     }
 
@@ -46,12 +50,14 @@ class LegacyRecordMapper
             $attributes['public_story'] = $attributes['story_line'];
         }
 
+        if (! empty($attributes['annotator_id']) && Schema::hasColumn('annotations', 'user_id')) {
+            $attributes['user_id'] = $attributes['annotator_id'];
+        }
+
         if (
             ! Schema::hasColumn('annotations', 'annotator_id')
             && Schema::hasColumn('annotations', 'user_id')
-            && ! empty($attributes['annotator_id'])
         ) {
-            $attributes['user_id'] = $attributes['annotator_id'];
             unset($attributes['annotator_id']);
         }
 

@@ -24,7 +24,7 @@
                 @endif
             @endforeach
         </div>
-        {{ $moments->links() }}
+        {{-- pagination links weggelaten: geen extra views nodig op Plesk --}}
     @endif
 </div>
 @endsection

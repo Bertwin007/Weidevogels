@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\LegacyRecordMapper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -13,6 +14,7 @@ class HealthController extends Controller
         $checks = [
             'app_key' => (bool) config('app.key'),
             'db' => false,
+            'legacy_mapper' => class_exists(LegacyRecordMapper::class),
             'storage_writable' => is_writable(storage_path('logs')),
             'sessions_writable' => is_writable(storage_path('framework/sessions')),
             'views_writable' => is_writable(storage_path('framework/views')),

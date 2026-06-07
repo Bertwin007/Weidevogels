@@ -32,7 +32,7 @@
                 </tbody>
             </table>
         </div>
-        {{ $queue->links() }}
+        {{-- pagination links weggelaten --}}
     @endif
 </div>
 @endsection

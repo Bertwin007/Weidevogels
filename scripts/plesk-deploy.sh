@@ -23,8 +23,10 @@ export PHP_BIN
 
 if command -v composer >/dev/null 2>&1; then
   composer install --no-dev --optimize-autoloader --no-interaction
+  composer dump-autoload --optimize --no-interaction
 elif [[ -f /usr/local/psa/var/modules/composer/composer.phar ]]; then
   "$PHP_BIN" /usr/local/psa/var/modules/composer/composer.phar install --no-dev --optimize-autoloader --no-interaction
+  "$PHP_BIN" /usr/local/psa/var/modules/composer/composer.phar dump-autoload --optimize --no-interaction
 else
   echo "Composer niet gevonden. Installeer Composer in Plesk (PHP Composer) of via SSH."
   exit 1

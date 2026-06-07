@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use App\Support\LegacyRecordMapper;
+use App\Services\LegacyRecordMapper;
 use App\Services\ExifService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
