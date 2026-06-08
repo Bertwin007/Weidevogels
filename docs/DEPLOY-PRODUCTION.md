@@ -5,7 +5,34 @@
 - **Git deploy-pad:** `httpdocs` (hele repo, **niet** `httpdocs/public`)
 - **Document root:** `httpdocs/public`
 - **Database:** MySQL via Plesk (geen SQLite op productie)
-- **Acties na deployment:** `bash httpdocs/scripts/plesk-deploy.sh`
+
+### Git + automatische deploy (aanbevolen)
+
+In Plesk: **Websites & domeinen** → **greidefugels.nl** → **Git** → repository-instellingen.
+
+1. **Implementatiepad (deployment path):** `httpdocs`
+2. Vink aan: **Extra implementatie-acties inschakelen** (*Enable additional deployment actions*)
+3. Plak dit in het tekstveld (werkt vanuit `httpdocs`):
+
+```bash
+bash scripts/plesk-git-hook.sh
+```
+
+Of korter, zonder logbestand:
+
+```bash
+bash scripts/plesk-deploy.sh
+```
+
+4. Sla op. Bij **Nu implementeren** / **Deploy now** doet Plesk dan: `git pull` + composer + migrate + cache.
+
+Log na automatische deploy (alleen bij de hook-variant):
+
+```bash
+tail -50 ~/httpdocs/storage/logs/plesk-git-deploy.log
+```
+
+**Let op:** pad `httpdocs/scripts/...` alleen gebruiken als je het commando vanuit je home-directory (`~`) start, niet in het Plesk-tekstveld.
 
 ## Eerste keer: MySQL koppelen
 
