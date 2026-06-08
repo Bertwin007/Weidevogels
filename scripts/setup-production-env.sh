@@ -38,12 +38,18 @@ EXISTING_KEY=""
 EXISTING_DB_DATABASE=""
 EXISTING_DB_USERNAME=""
 EXISTING_DB_PASSWORD=""
+EXISTING_GOOGLE_AI_API_KEY=""
+EXISTING_OPENAI_API_KEY=""
+EXISTING_AI_VISION_PROVIDER=""
 
 if [[ -f "$TARGET" ]]; then
   EXISTING_KEY="$(read_existing APP_KEY)"
   EXISTING_DB_DATABASE="$(read_existing DB_DATABASE)"
   EXISTING_DB_USERNAME="$(read_existing DB_USERNAME)"
   EXISTING_DB_PASSWORD="$(read_existing DB_PASSWORD)"
+  EXISTING_GOOGLE_AI_API_KEY="$(read_existing GOOGLE_AI_API_KEY)"
+  EXISTING_OPENAI_API_KEY="$(read_existing OPENAI_API_KEY)"
+  EXISTING_AI_VISION_PROVIDER="$(read_existing AI_VISION_PROVIDER)"
   cp "$TARGET" "${TARGET}.bak.$(date +%Y%m%d%H%M%S)"
 fi
 
@@ -60,6 +66,19 @@ if [[ $# -ge 3 ]]; then
   echo "MySQL-gegevens ingevuld."
 elif [[ -n "$EXISTING_DB_PASSWORD" && -n "$EXISTING_DB_DATABASE" && -n "$EXISTING_DB_USERNAME" ]]; then
   "$PHP_BIN" scripts/set-env-db.php "$EXISTING_DB_DATABASE" "$EXISTING_DB_USERNAME" "$EXISTING_DB_PASSWORD"
+fi
+
+if [[ -n "$EXISTING_GOOGLE_AI_API_KEY" ]]; then
+  export GOOGLE_AI_API_KEY="$EXISTING_GOOGLE_AI_API_KEY"
+fi
+if [[ -n "$EXISTING_OPENAI_API_KEY" ]]; then
+  export OPENAI_API_KEY="$EXISTING_OPENAI_API_KEY"
+fi
+if [[ -n "$EXISTING_AI_VISION_PROVIDER" ]]; then
+  export AI_VISION_PROVIDER="$EXISTING_AI_VISION_PROVIDER"
+fi
+if [[ -n "$EXISTING_GOOGLE_AI_API_KEY" || -n "$EXISTING_OPENAI_API_KEY" ]]; then
+  "$PHP_BIN" scripts/set-env-ai.php
 fi
 
 chmod 640 "$TARGET" 2>/dev/null || true

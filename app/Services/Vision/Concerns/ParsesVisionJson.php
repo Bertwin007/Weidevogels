@@ -21,7 +21,7 @@ trait ParsesVisionJson
             season: $this->stringOrNull($json['season'] ?? null),
             storyLine: $this->stringOrNull($json['story_line'] ?? $json['story'] ?? null),
             caption: $this->stringOrNull($json['caption'] ?? null),
-            confidence: isset($json['confidence']) ? (int) $json['confidence'] : null,
+            confidence: isset($json['confidence']) ? max(0, min(100, (int) $json['confidence'])) : 80,
             provider: $provider,
         );
     }
@@ -69,15 +69,21 @@ trait ParsesVisionJson
         $note = $contributorNote ? "Toelichting van de fotograaf: {$contributorNote}\n" : '';
 
         return <<<PROMPT
-Je bent een vrijwilliger die weidevogelfoto's uit Fryslân (Nederland) beschrijft voor Agrarisch Natuurfonds Fryslân.
-Analyseer de foto en geef ALLEEN geldig JSON terug met deze velden:
-- species (Nederlandse soortnaam, bijv. Grutto, Kievit, Scholekster)
-- count_label (korte tekst, bijv. "2" of "een paar")
-- behavior (kort gedrag in het Nederlands)
-- season (Lente, Zomer, Herfst of Winter — schat op basis van foto en datum)
-- story_line (max 200 tekens, publieke verhaalregel in het Nederlands)
-- caption (optionele langere toelichting in het Nederlands)
-- confidence (0-100, hoe zeker je bent)
+Je bent een ervaren weidevogel-spotter voor Agrarisch Natuurfonds Fryslân in Fryslân (Nederland).
+Bekijk de foto nauwkeurig en herken weidevogels op greideland.
+
+Veelvoorkomende soorten: Grutto, Kievit, Scholekster, Tureluur, Veldleeuwerik, Zwarte stilt, Kemphaan, Wulp.
+Geef de meest waarschijnlijke soort in het Nederlands. Tel zichtbare vogels. Beschrijf concreet gedrag (balts, broeden, voeren, vliegend, rusten, kuiken).
+Kies seizoen: Lente, Zomer, Herfst of Winter (foto + omgeving).
+
+Geef ALLEEN geldig JSON met:
+- species
+- count_label
+- behavior
+- season
+- story_line (max 200 tekens, warm publiek verhaal in het Nederlands)
+- caption (optioneel, iets langer)
+- confidence (0-100; gebruik 75-95 bij duidelijke herkenning, 55-74 bij twijfel, onder 55 alleen als foto onbruikbaar is)
 
 {$note}Antwoord uitsluitend met JSON, geen markdown.
 PROMPT;

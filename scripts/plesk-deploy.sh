@@ -42,6 +42,14 @@ else
   bash scripts/setup-production-env.sh
 fi
 
+if [[ -f "$ROOT/.env.ai.local" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$ROOT/.env.ai.local"
+  set +a
+  "$PHP_BIN" scripts/set-env-ai.php
+fi
+
 "$PHP_BIN" artisan optimize:clear --no-interaction 2>/dev/null || "$PHP_BIN" artisan config:clear
 
 if ! "$PHP_BIN" artisan migrate:status --no-interaction >/dev/null 2>&1; then

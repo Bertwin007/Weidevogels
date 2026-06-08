@@ -46,7 +46,7 @@ class AnnotateController extends Controller
             'observation' => $observation,
             'photoUrl' => $photoUrl,
             'aiEnabled' => (bool) config('greidefugels.ai.enabled'),
-            'aiConfigured' => $aiScanner->isConfigured(),
+            'aiConfigured' => $aiScanner->usesRealVision(),
             'aiProvider' => $aiScanner->activeProvider(),
         ]);
     }
@@ -57,9 +57,17 @@ class AnnotateController extends Controller
             return redirect()->route('annotate.index');
         }
 
-        $scanner->analyze($observation->fresh());
+        $suggestion = $scanner->analyze($observation->fresh());
 
-        return back()->with('success', 'AI-voorstel vernieuwd. Controleer en pas zo nodig aan.');
+        if ($suggestion->isEmpty() && $suggestion->notes) {
+            return back()->withErrors(['ai' => $suggestion->notes]);
+        }
+
+        $message = $suggestion->isHeuristicSuggestion()
+            ? 'Basisvoorstel gemaakt. Voor hogere nauwkeurigheid: stel GOOGLE_AI_API_KEY in.'
+            : 'AI-voorstel vernieuwd ('.($suggestion->confidence ?? '?').'% zekerheid). Controleer en pas zo nodig aan.';
+
+        return back()->with('success', $message);
     }
 
     public function photo(Observation $observation): BinaryFileResponse

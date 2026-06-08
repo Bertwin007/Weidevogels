@@ -1,5 +1,11 @@
 @if($observation->hasAiSuggestion())
     <div class="alert alert-info" id="ai-suggestion-panel">
+        @if($observation->isHeuristicSuggestion())
+            <div class="alert alert-error" style="margin-bottom:0.75rem">
+                <strong>Let op:</strong> dit is een basisvoorstel (25% zekerheid) zonder echte Google/OpenAI-analyse.
+                Voeg <code>GOOGLE_AI_API_KEY</code> toe op de server en klik <em>Opnieuw analyseren</em>.
+            </div>
+        @endif
         <strong>AI-voorstel</strong>
         @if($observation->aiProviderLabel())
             <span class="meta">via {{ $observation->aiProviderLabel() }}</span>

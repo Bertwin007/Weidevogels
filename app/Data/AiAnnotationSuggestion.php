@@ -40,4 +40,9 @@ readonly class AiAnnotationSuggestion
             && $this->storyLine === null
             && $this->behavior === null;
     }
+
+    public function isHeuristicSuggestion(): bool
+    {
+        return ($this->provider ?? '') === 'heuristic';
+    }
 }

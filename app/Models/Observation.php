@@ -213,6 +213,11 @@ class Observation extends Model
             || filled($this->attributes['ai_behavior'] ?? null);
     }
 
+    public function isHeuristicSuggestion(): bool
+    {
+        return ($this->aiMeta('provider') ?? '') === 'heuristic';
+    }
+
     public function aiProviderLabel(): ?string
     {
         $provider = $this->aiMeta('provider');

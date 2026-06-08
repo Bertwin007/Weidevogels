@@ -35,12 +35,25 @@ class AiPreScanService
 
     public function isConfigured(): bool
     {
-        return $this->resolveAnalyzer()->isConfigured();
+        return $this->usesRealVision();
+    }
+
+    public function usesRealVision(): bool
+    {
+        return match (config('greidefugels.ai.provider')) {
+            'openai' => app(OpenAiVisionAnalyzer::class)->isConfigured(),
+            'gemini' => app(GeminiVisionAnalyzer::class)->isConfigured(),
+            default => false,
+        };
     }
 
     public function activeProvider(): string
     {
-        return (string) config('greidefugels.ai.provider', 'none');
+        if ($this->usesRealVision()) {
+            return (string) config('greidefugels.ai.provider', 'gemini');
+        }
+
+        return 'heuristic';
     }
 
     protected function resolveAnalyzer(): VisionAnalyzer
@@ -54,11 +67,19 @@ class AiPreScanService
             default => app(HeuristicVisionAnalyzer::class),
         };
 
-        if (! $analyzer->isConfigured() && ! $analyzer instanceof HeuristicVisionAnalyzer) {
-            return app(HeuristicVisionAnalyzer::class);
+        if ($analyzer->isConfigured()) {
+            return $analyzer;
         }
 
-        return $analyzer;
+        if ($analyzer instanceof HeuristicVisionAnalyzer) {
+            return $analyzer;
+        }
+
+        Log::warning('AI-vision provider niet geconfigureerd, gebruik basisvoorstel.', [
+            'provider' => $provider,
+        ]);
+
+        return app(HeuristicVisionAnalyzer::class);
     }
 
     protected function storeSuggestion(Observation $observation, AiAnnotationSuggestion $suggestion): void
