@@ -17,9 +17,9 @@ trait ParsesVisionJson
         return new AiAnnotationSuggestion(
             species: $this->stringOrNull($json['species'] ?? null),
             countLabel: $this->stringOrNull($json['count_label'] ?? $json['count'] ?? null),
-            behavior: $this->stringOrNull($json['behavior'] ?? null),
+            behavior: $this->limitedString($json['behavior'] ?? null, 160),
             season: $this->stringOrNull($json['season'] ?? null),
-            storyLine: $this->stringOrNull($json['story_line'] ?? $json['story'] ?? null),
+            storyLine: $this->limitedString($json['story_line'] ?? $json['story'] ?? null, 200),
             caption: $this->stringOrNull($json['caption'] ?? null),
             confidence: isset($json['confidence']) ? max(0, min(100, (int) $json['confidence'])) : 80,
             provider: $provider,
@@ -64,6 +64,24 @@ trait ParsesVisionJson
         return $value !== '' ? $value : null;
     }
 
+    protected function limitedString(mixed $value, int $max): ?string
+    {
+        $value = $this->stringOrNull($value);
+
+        if ($value === null || mb_strlen($value) <= $max) {
+            return $value;
+        }
+
+        $truncated = mb_substr($value, 0, $max);
+        $lastSpace = mb_strrpos($truncated, ' ');
+
+        if ($lastSpace !== false && $lastSpace > (int) ($max * 0.6)) {
+            $truncated = mb_substr($truncated, 0, $lastSpace);
+        }
+
+        return rtrim($truncated, '.,;:!?…').'…';
+    }
+
     protected function visionPrompt(?string $contributorNote): string
     {
         $note = $contributorNote ? "Toelichting van de fotograaf: {$contributorNote}\n" : '';
@@ -79,11 +97,13 @@ Kies seizoen: Lente, Zomer, Herfst of Winter (foto + omgeving).
 Geef ALLEEN geldig JSON met:
 - species
 - count_label
-- behavior
+- behavior (max 160 tekens, kort gedrag in het Nederlands)
 - season
-- story_line (max 200 tekens, warm publiek verhaal in het Nederlands)
-- caption (optioneel, iets langer)
+- story_line (STRIKT maximaal 200 tekens inclusief spaties en leestekens; tel je tekens; één korte, warme zin voor het publiek; nooit langer dan 200)
+- caption (optioneel, mag langer)
 - confidence (0-100; gebruik 75-95 bij duidelijke herkenning, 55-74 bij twijfel, onder 55 alleen als foto onbruikbaar is)
+
+Belangrijk: story_line MOET ≤200 tekens zijn. Controleer de lengte vóór je antwoordt.
 
 {$note}Antwoord uitsluitend met JSON, geen markdown.
 PROMPT;

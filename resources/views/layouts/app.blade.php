@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Greidefugels') — Agrarisch Natuurfonds Fryslân</title>
     <meta name="description" content="@yield('meta_description', 'Weidevogels en greideland in Fryslân — Agrarisch Natuurfonds Fryslân.')">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         * { box-sizing: border-box; }
         body {
@@ -176,6 +177,7 @@
             <a class="brand" href="{{ route('home') }}">Greidefugels</a>
             <nav>
                 <a href="{{ route('moments.index') }}">Momenten</a>
+                <a href="{{ route('ondernemers') }}">Voor bedrijven</a>
                 <a href="{{ route('upload.create') }}">Deel foto</a>
                 <a href="{{ route('donate') }}">Steun ANF</a>
                 @auth

@@ -97,7 +97,7 @@ class AiPreScanService
         }
 
         if (Schema::hasColumn('observations', 'ai_behavior')) {
-            $attributes['ai_behavior'] = $suggestion->behavior;
+            $attributes['ai_behavior'] = $this->limitAiText($suggestion->behavior, 160);
         }
 
         if (Schema::hasColumn('observations', 'ai_season')) {
@@ -110,7 +110,7 @@ class AiPreScanService
 
         if (Schema::hasColumn('observations', 'ai_notes')) {
             $attributes['ai_notes'] = json_encode(array_filter([
-                'story_line' => $suggestion->storyLine,
+                'story_line' => $this->limitAiText($suggestion->storyLine, 200),
                 'caption' => $suggestion->caption,
                 'provider' => $suggestion->provider,
                 'message' => $suggestion->notes,
@@ -130,5 +130,25 @@ class AiPreScanService
                 'exception' => $e,
             ]);
         }
+    }
+
+    private function limitAiText(?string $value, int $max): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (mb_strlen($value) <= $max) {
+            return $value;
+        }
+
+        $truncated = mb_substr($value, 0, $max);
+        $lastSpace = mb_strrpos($truncated, ' ');
+
+        if ($lastSpace !== false && $lastSpace > (int) ($max * 0.6)) {
+            $truncated = mb_substr($truncated, 0, $lastSpace);
+        }
+
+        return rtrim($truncated, '.,;:!?…').'…';
     }
 }

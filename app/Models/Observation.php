@@ -249,7 +249,7 @@ class Observation extends Model
 
     public function suggestedField(string $field): ?string
     {
-        return match ($field) {
+        $value = match ($field) {
             'species' => $this->attributes['ai_species'] ?? null,
             'count_label' => isset($this->attributes['ai_count']) ? (string) $this->attributes['ai_count'] : null,
             'behavior' => $this->attributes['ai_behavior'] ?? null,
@@ -258,6 +258,32 @@ class Observation extends Model
             'caption' => $this->aiMeta('caption'),
             default => null,
         };
+
+        if ($value === null) {
+            return null;
+        }
+
+        return match ($field) {
+            'story_line' => $this->limitSuggestedText($value, 200),
+            'behavior' => $this->limitSuggestedText($value, 160),
+            default => $value,
+        };
+    }
+
+    private function limitSuggestedText(string $value, int $max): string
+    {
+        if (mb_strlen($value) <= $max) {
+            return $value;
+        }
+
+        $truncated = mb_substr($value, 0, $max);
+        $lastSpace = mb_strrpos($truncated, ' ');
+
+        if ($lastSpace !== false && $lastSpace > (int) ($max * 0.6)) {
+            $truncated = mb_substr($truncated, 0, $lastSpace);
+        }
+
+        return rtrim($truncated, '.,;:!?…').'…';
     }
 
     public function aiConfidence(): ?int

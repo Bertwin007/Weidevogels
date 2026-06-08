@@ -57,11 +57,22 @@
                 caption: @json($observation->suggestedField('caption')),
             };
 
+            const limits = { story_line: 200, behavior: 160 };
+
+            function clip(text, max) {
+                if (!text || text.length <= max) return text;
+                let cut = text.slice(0, max);
+                const lastSpace = cut.lastIndexOf(' ');
+                if (lastSpace > max * 0.6) cut = cut.slice(0, lastSpace);
+                return cut.replace(/[.,;:!?…]+$/, '') + '…';
+            }
+
             button.addEventListener('click', function () {
                 Object.entries(values).forEach(([id, value]) => {
                     if (!value) return;
                     const field = document.getElementById(id);
-                    if (field && !field.value) field.value = value;
+                    if (!field || field.value) return;
+                    field.value = limits[id] ? clip(value, limits[id]) : value;
                 });
             });
         });

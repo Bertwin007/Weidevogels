@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\SubmissionController;
+use App\Http\Controllers\Api\GreideScanController;
 use App\Http\Controllers\AnnotateController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DonationRedirectController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\OndernemersController;
 use App\Http\Controllers\MomentController;
 use App\Http\Controllers\ObservationManageController;
 use App\Http\Controllers\UploadController;
@@ -15,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/gezondheid', HealthController::class)->name('health');
 Route::get('/', HomeController::class)->name('home');
+Route::get('/ondernemers', [OndernemersController::class, 'index'])->name('ondernemers');
+Route::post('/api/scan', [GreideScanController::class, 'store'])->middleware('throttle:12,1')->name('api.scan');
 Route::get('/momenten', [MomentController::class, 'index'])->name('moments.index');
 Route::get('/media/observations/{observation}', [MediaController::class, 'observation'])->name('media.observation');
 Route::get('/momenten/{observation:slug}', [MomentController::class, 'show'])->name('moments.show');

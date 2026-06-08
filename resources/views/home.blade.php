@@ -13,6 +13,7 @@
         <p style="margin-top:1.5rem">
             <a class="btn" href="{{ route('upload.create') }}">Deel jouw foto</a>
             <a class="btn btn-donate" href="{{ route('donate') }}" style="margin-left:0.5rem">Steun dit greideland</a>
+            <a class="btn btn-secondary" href="{{ route('ondernemers') }}" style="margin-left:0.5rem">Voor bedrijven</a>
         </p>
     </div>
 </section>
