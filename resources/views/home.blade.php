@@ -20,6 +20,21 @@
             <a href="#scan">Greide-scan</a>
             <a href="#momenten">Momenten</a>
             <a href="{{ route('donate') }}">Steun ANF</a>
+            @auth
+                @if(auth()->user()->isAnnotator())
+                    <a href="{{ route('annotate.index') }}">Annoteren</a>
+                @endif
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}">Beheer</a>
+                    <a href="{{ route('admin.callcenter') }}">Callcenter</a>
+                @endif
+                <form action="{{ route('logout') }}" method="post" class="nav-logout">
+                    @csrf
+                    <button type="submit">Uitloggen</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="nav-login">Inloggen</a>
+            @endauth
         </div>
     </div>
 </header>
