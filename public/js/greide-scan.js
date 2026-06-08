@@ -8,19 +8,6 @@
 
     let currentScan = null;
 
-    const pV = document.getElementById('publicView');
-    const aV = document.getElementById('agentView');
-    document.querySelectorAll('#viewtog button').forEach((button) => {
-        button.addEventListener('click', () => {
-            document.querySelectorAll('#viewtog button').forEach((item) => item.classList.remove('active'));
-            button.classList.add('active');
-            const agent = button.dataset.v === 'agent';
-            pV.style.display = agent ? 'none' : 'block';
-            aV.style.display = agent ? 'block' : 'none';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    });
-
     const drop = document.getElementById('drop');
     const fileInput = document.getElementById('file');
     const results = document.getElementById('results');

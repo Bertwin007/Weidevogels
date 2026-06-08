@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CallcenterController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\SubmissionController;
 use App\Http\Controllers\Api\GreideScanController;
@@ -46,6 +47,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/callcenter', [CallcenterController::class, 'index'])->name('callcenter');
         Route::get('/inzendingen', [SubmissionController::class, 'index'])->name('submissions.index');
         Route::get('/inzendingen/{observation}', [SubmissionController::class, 'edit'])->name('submissions.edit');
         Route::put('/inzendingen/{observation}', [SubmissionController::class, 'update'])->name('submissions.update');

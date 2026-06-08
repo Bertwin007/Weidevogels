@@ -1,0 +1,135 @@
+.callcenter-workbench .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin: 0 0 30px;
+}
+
+.callcenter-workbench .kpi {
+    background: #fff;
+    border: 1px solid #d8e2dc;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.callcenter-workbench .kpi b {
+    font-size: 1.6rem;
+    color: #1f4a1f;
+    display: block;
+}
+
+.callcenter-workbench .kpi span {
+    font-size: 0.8rem;
+    color: #52796f;
+}
+
+.callcenter-workbench .queue {
+    border: 1px solid #d8e2dc;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.callcenter-workbench .qrow {
+    display: grid;
+    grid-template-columns: 1.3fr 1.4fr 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid #d8e2dc;
+}
+
+.callcenter-workbench .qrow:last-child {
+    border-bottom: none;
+}
+
+.callcenter-workbench .qrow.head {
+    background: #f7f5ee;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #52796f;
+    font-weight: 700;
+}
+
+.callcenter-workbench .qrow .co {
+    font-weight: 600;
+    color: #22301c;
+}
+
+.callcenter-workbench .qrow .co span {
+    display: block;
+    font-size: 0.78rem;
+    color: #52796f;
+    font-weight: 400;
+}
+
+.callcenter-workbench .trigger {
+    font-size: 0.86rem;
+    color: #1f4a1f;
+}
+
+.callcenter-workbench .trigger b {
+    color: #b06d1c;
+}
+
+.callcenter-workbench .pill {
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 0.25em 0.7em;
+    display: inline-block;
+}
+
+.callcenter-workbench .pill.hot {
+    background: #fdeede;
+    color: #b06d1c;
+}
+
+.callcenter-workbench .pill.warm {
+    background: #eaf2e6;
+    color: #1f4a1f;
+}
+
+.callcenter-workbench .pill.new {
+    background: #e7eef7;
+    color: #37618e;
+}
+
+.callcenter-workbench .scriptbox {
+    background: #f7f5ee;
+    border: 1px dashed #2f6b2e;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-top: 22px;
+    font-size: 0.92rem;
+}
+
+.callcenter-workbench .scriptbox b {
+    color: #1f4a1f;
+}
+
+.callcenter-workbench .callcenter-empty {
+    padding: 1.25rem;
+    border: 1px solid #d8e2dc;
+    border-radius: 12px;
+    background: #fff;
+    color: #52796f;
+}
+
+@media (max-width: 820px) {
+    .callcenter-workbench .kpis {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .callcenter-workbench .qrow {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .callcenter-workbench .qrow.head {
+        display: none;
+    }
+}

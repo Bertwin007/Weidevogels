@@ -13,8 +13,9 @@
         <div class="stat"><strong>{{ $stats['donations'] }}</strong> donatieklicks</div>
     </div>
 
-    <p style="margin:1.5rem 0">
-        <a class="btn" href="{{ route('admin.submissions.index') }}">Alle inzendingen beheren →</a>
+    <p style="margin:1.5rem 0;display:flex;flex-wrap:wrap;gap:0.75rem">
+        <a class="btn" href="{{ route('admin.submissions.index') }}">Alle inzendingen beheren</a>
+        <a class="btn btn-secondary" href="{{ route('admin.callcenter') }}">Callcenter-werkbank</a>
     </p>
 
     <h2>Laatste inzendingen</h2>

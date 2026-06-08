@@ -21,16 +21,10 @@
             <a href="#momenten">Momenten</a>
             <a href="{{ route('donate') }}">Steun ANF</a>
         </div>
-        <div class="viewtog" id="viewtog">
-            <button type="button" class="active" data-v="public">Voor bedrijven</button>
-            <button type="button" data-v="agent">Callcenter</button>
-        </div>
     </div>
 </header>
 
 <div id="greide-scan-app" data-scan-url="{{ $scanUrl }}" data-submit-url="{{ $submitUrl }}" data-area-name="Ljippelân Workum">
-
-<div id="publicView">
 
 <section class="hero">
     <div class="wrap">
@@ -189,47 +183,6 @@
         </div>
     </div>
 </section>
-</div>
-
-<div id="agentView">
-<section>
-    <div class="wrap">
-        <div class="agent-head">
-            <div class="section-head">
-                <span class="eyebrow">Callcenter-werkbank</span>
-                <h2>Inzendingen worden belredenen</h2>
-                <p>Elke Greide-scan krijgt een status en een concrete reden om te bellen. Zo ondersteunt de site het outbound-werk: data → gesprek → uitbreiding.</p>
-            </div>
-        </div>
-        <div class="kpis">
-            <div class="kpi"><b>{{ $kpis['partners'] }}</b><span>actieve bedrijfspartners</span></div>
-            <div class="kpi"><b>{{ $kpis['open_triggers'] }}</b><span>open belredenen vandaag</span></div>
-            <div class="kpi"><b>{{ $kpis['scans_24h'] }}</b><span>scans laatste 24u</span></div>
-            <div class="kpi"><b>{{ $kpis['areas_kuikens'] }}</b><span>gebieden met kuikens 🐣</span></div>
-        </div>
-        <div class="queue" id="queue">
-            <div class="qrow head">
-                <div>Bedrijf / gebied</div>
-                <div>Belreden (uit de data)</div>
-                <div>Status</div>
-                <div></div>
-            </div>
-            @php $labels = ['hot' => 'Belreden', 'warm' => 'Opvolgen', 'new' => 'Nieuw']; @endphp
-            @foreach($queue as $row)
-                <div class="qrow">
-                    <div class="co">{{ $row['co'] }}<span>{{ $row['geb'] }}</span></div>
-                    <div class="trigger">📸 <b>{{ $row['trig'] }}</b></div>
-                    <div><span class="pill {{ $row['st'] }}">{{ $labels[$row['st']] ?? 'Nieuw' }}</span></div>
-                    <div><button type="button" class="btn btn--green" style="font-size:.82rem;padding:.5em 1em">{{ $row['act'] }}</button></div>
-                </div>
-            @endforeach
-        </div>
-        <div class="scriptbox">
-            <b>Belscript-suggestie (automatisch gevuld):</b> "Goedemiddag, u spreekt met <i>[agent]</i> van Greidefugels. Ik bel omdat onze laatste Greide-scan op <b>úw</b> gebied <i>[gebied]</i> <b>[belreden]</b> liet zien — een mooi moment om met uw team langs te komen en het vast te leggen voor uw biodiversiteits-bewijs. Zal ik een datum in het broedseizoen voor u reserveren?"
-        </div>
-    </div>
-</section>
-</div>
 
 </div>
 
