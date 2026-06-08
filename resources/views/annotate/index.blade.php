@@ -16,6 +16,7 @@
                     <tr>
                         <th>#</th>
                         <th>Project</th>
+                        <th>AI</th>
                         <th>Geüpload</th>
                         <th></th>
                     </tr>
@@ -25,6 +26,13 @@
                         <tr>
                             <td>{{ $item->id }}</td>
                             <td>{{ $item->project?->name ?? '—' }}</td>
+                            <td>
+                                @if($item->hasAiSuggestion())
+                                    <span class="badge" title="AI-voorstel beschikbaar">AI</span>
+                                @else
+                                    <span class="meta">—</span>
+                                @endif
+                            </td>
                             <td>@include('components.formatted-datetime', ['value' => $item->created_at, 'showTime' => true])</td>
                             <td>
                                 <a href="{{ route('annotate.edit', $item) }}">Annoteren →</a>

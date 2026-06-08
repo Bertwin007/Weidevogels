@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Observation;
+use App\Services\AiPreScanService;
 use App\Services\LegacyRecordMapper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,7 +40,26 @@ class AnnotateController extends Controller
             ? route('annotate.photo', $observation)
             : null;
 
-        return view('annotate.edit', compact('observation', 'photoUrl'));
+        $aiScanner = app(AiPreScanService::class);
+
+        return view('annotate.edit', [
+            'observation' => $observation,
+            'photoUrl' => $photoUrl,
+            'aiEnabled' => (bool) config('greidefugels.ai.enabled'),
+            'aiConfigured' => $aiScanner->isConfigured(),
+            'aiProvider' => $aiScanner->activeProvider(),
+        ]);
+    }
+
+    public function rescan(Observation $observation, AiPreScanService $scanner): RedirectResponse
+    {
+        if (! $observation->isPendingAnnotation()) {
+            return redirect()->route('annotate.index');
+        }
+
+        $scanner->analyze($observation->fresh());
+
+        return back()->with('success', 'AI-voorstel vernieuwd. Controleer en pas zo nodig aan.');
     }
 
     public function photo(Observation $observation): BinaryFileResponse

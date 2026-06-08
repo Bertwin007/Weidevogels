@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Observation;
+use App\Services\AiPreScanService;
 use App\Services\LegacyRecordMapper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,9 @@ class HealthController extends Controller
             'app_key' => (bool) config('app.key'),
             'db' => false,
             'legacy_mapper' => class_exists(LegacyRecordMapper::class),
+            'ai_enabled' => (bool) config('greidefugels.ai.enabled'),
+            'ai_provider' => config('greidefugels.ai.provider'),
+            'ai_configured' => app(AiPreScanService::class)->isConfigured(),
             'storage_writable' => is_writable(storage_path('logs')),
             'storage_app_writable' => is_writable(storage_path('app/public')),
             'sessions_writable' => is_writable(storage_path('framework/sessions')),

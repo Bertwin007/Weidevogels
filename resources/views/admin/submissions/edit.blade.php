@@ -56,6 +56,12 @@
 
         <h2 style="margin-top:1.5rem">Annotatie</h2>
 
+        @include('components.ai-suggestion-panel', [
+            'observation' => $observation,
+            'aiEnabled' => (bool) config('greidefugels.ai.enabled'),
+            'aiConfigured' => app(\App\Services\AiPreScanService::class)->isConfigured(),
+        ])
+
         <label for="species">Soort</label>
         <input type="text" name="species" id="species" value="{{ old('species', $observation->annotation?->species) }}">
 

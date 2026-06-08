@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/annoteren/{observation}/foto', [AnnotateController::class, 'photo'])->name('annotate.photo');
         Route::get('/annoteren/{observation}', [AnnotateController::class, 'edit'])->name('annotate.edit');
         Route::post('/annoteren/{observation}', [AnnotateController::class, 'store'])->name('annotate.store');
+        Route::post('/annoteren/{observation}/ai', [AnnotateController::class, 'rescan'])->name('annotate.ai');
         Route::delete('/annoteren/{observation}', [ObservationManageController::class, 'destroy'])->name('annotate.destroy');
         Route::delete('/momenten/{observation:slug}', [ObservationManageController::class, 'destroy'])->name('moments.destroy');
     });

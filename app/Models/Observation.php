@@ -29,6 +29,12 @@ class Observation extends Model
         'status',
         'slug',
         'published_at',
+        'ai_species',
+        'ai_count',
+        'ai_behavior',
+        'ai_season',
+        'ai_confidence',
+        'ai_notes',
     ];
 
     protected function casts(): array
@@ -198,6 +204,79 @@ class Observation extends Model
     public function getContributorLabelAttribute(): string
     {
         return $this->guest_name ?: 'Anoniem';
+    }
+
+    public function hasAiSuggestion(): bool
+    {
+        return filled($this->attributes['ai_species'] ?? null)
+            || filled($this->aiMeta('story_line'))
+            || filled($this->attributes['ai_behavior'] ?? null);
+    }
+
+    public function aiProviderLabel(): ?string
+    {
+        $provider = $this->aiMeta('provider');
+
+        return match ($provider) {
+            'gemini' => 'Google Gemini',
+            'openai' => 'OpenAI',
+            'heuristic' => 'Basisvoorstel (zonder AI)',
+            default => $provider,
+        };
+    }
+
+    public function aiField(string $field): ?string
+    {
+        if ($this->annotation) {
+            return null;
+        }
+
+        return match ($field) {
+            'species' => $this->attributes['ai_species'] ?? null,
+            'count_label' => isset($this->attributes['ai_count']) ? (string) $this->attributes['ai_count'] : null,
+            'behavior' => $this->attributes['ai_behavior'] ?? null,
+            'season' => $this->attributes['ai_season'] ?? null,
+            'story_line' => $this->aiMeta('story_line'),
+            'caption' => $this->aiMeta('caption'),
+            default => null,
+        };
+    }
+
+    public function suggestedField(string $field): ?string
+    {
+        return match ($field) {
+            'species' => $this->attributes['ai_species'] ?? null,
+            'count_label' => isset($this->attributes['ai_count']) ? (string) $this->attributes['ai_count'] : null,
+            'behavior' => $this->attributes['ai_behavior'] ?? null,
+            'season' => $this->attributes['ai_season'] ?? null,
+            'story_line' => $this->aiMeta('story_line'),
+            'caption' => $this->aiMeta('caption'),
+            default => null,
+        };
+    }
+
+    public function aiConfidence(): ?int
+    {
+        return isset($this->attributes['ai_confidence']) ? (int) $this->attributes['ai_confidence'] : null;
+    }
+
+    public function aiMeta(string $key): ?string
+    {
+        $notes = $this->attributes['ai_notes'] ?? null;
+
+        if (! is_string($notes) || $notes === '') {
+            return null;
+        }
+
+        $data = json_decode($notes, true);
+
+        if (! is_array($data) || ! isset($data[$key])) {
+            return null;
+        }
+
+        $value = $data[$key];
+
+        return is_string($value) || is_numeric($value) ? (string) $value : null;
     }
 
     public function publishFromAnnotation(Annotation $annotation): void

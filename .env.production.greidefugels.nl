@@ -30,4 +30,11 @@ MAIL_MAILER=log
 
 ANF_DONATION_URL=https://agrarischnatuurfondsfryslan.nl/donateur-worden/?utm_source=greidefugels&utm_medium=moment&utm_campaign=weidevogels
 
+AI_PRESCAN_ENABLED=true
+AI_VISION_PROVIDER=gemini
+GOOGLE_AI_API_KEY=
+OPENAI_API_KEY=
+GOOGLE_AI_MODEL=gemini-2.0-flash
+OPENAI_VISION_MODEL=gpt-4o-mini
+
 VITE_APP_NAME="${APP_NAME}"

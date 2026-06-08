@@ -24,6 +24,12 @@
         </div>
     @endif
 
+    @include('components.ai-suggestion-panel', [
+        'observation' => $observation,
+        'aiEnabled' => $aiEnabled,
+        'aiConfigured' => $aiConfigured,
+    ])
+
     @if($errors->any())
         <div class="alert alert-error">
             @foreach($errors->all() as $error)
@@ -36,22 +42,22 @@
         @csrf
 
         <label for="species">Soort *</label>
-        <input type="text" name="species" id="species" value="{{ old('species', $observation->annotation?->species) }}" required placeholder="Grutto">
+        <input type="text" name="species" id="species" value="{{ old('species', $observation->annotation?->species ?? $observation->suggestedField('species')) }}" required placeholder="Grutto">
 
         <label for="count_label">Aantal *</label>
-        <input type="text" name="count_label" id="count_label" value="{{ old('count_label', $observation->annotation?->count_label) }}" required placeholder="2">
+        <input type="text" name="count_label" id="count_label" value="{{ old('count_label', $observation->annotation?->count_label ?? $observation->suggestedField('count_label')) }}" required placeholder="2">
 
         <label for="behavior">Gedrag *</label>
-        <input type="text" name="behavior" id="behavior" value="{{ old('behavior', $observation->annotation?->behavior) }}" required placeholder="Baltsend op wei">
+        <input type="text" name="behavior" id="behavior" value="{{ old('behavior', $observation->annotation?->behavior ?? $observation->suggestedField('behavior')) }}" required placeholder="Baltsend op wei">
 
         <label for="season">Seizoen *</label>
-        <input type="text" name="season" id="season" value="{{ old('season', $observation->annotation?->season) }}" required placeholder="Lente">
+        <input type="text" name="season" id="season" value="{{ old('season', $observation->annotation?->season ?? $observation->suggestedField('season')) }}" required placeholder="Lente">
 
         <label for="story_line">Verhaalregel (publiek) *</label>
-        <input type="text" name="story_line" id="story_line" value="{{ old('story_line', $observation->annotation?->story_line) }}" required maxlength="200" placeholder="Twee grutto's dansen op het natte land.">
+        <input type="text" name="story_line" id="story_line" value="{{ old('story_line', $observation->annotation?->story_line ?? $observation->suggestedField('story_line')) }}" required maxlength="200" placeholder="Twee grutto's dansen op het natte land.">
 
         <label for="caption">Langere toelichting</label>
-        <textarea name="caption" id="caption">{{ old('caption', $observation->annotation?->caption) }}</textarea>
+        <textarea name="caption" id="caption">{{ old('caption', $observation->annotation?->caption ?? $observation->suggestedField('caption')) }}</textarea>
 
         <div class="checkbox-row">
             <input type="checkbox" name="is_publishable" id="is_publishable" value="1" @checked(old('is_publishable', true))>

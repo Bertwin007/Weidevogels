@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\AnalyzeObservationPhoto;
 use App\Models\Project;
 use App\Services\LegacyRecordMapper;
 use App\Services\ExifService;
@@ -56,7 +57,11 @@ class UploadController extends Controller
                 'status' => 'pending',
             ], $validated['photo']);
 
-            $project->observations()->create($attributes);
+            $observation = $project->observations()->create($attributes);
+
+            if (config('greidefugels.ai.enabled')) {
+                AnalyzeObservationPhoto::dispatch($observation);
+            }
         } catch (\Throwable $e) {
             Log::error('Upload mislukt: '.$e->getMessage(), ['exception' => $e]);
 
