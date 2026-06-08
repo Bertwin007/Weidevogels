@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CallcenterController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\EsgReportController;
 use App\Http\Controllers\Admin\SubmissionController;
 use App\Http\Controllers\Api\GreideScanController;
 use App\Http\Controllers\AnnotateController;
@@ -52,5 +53,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/inzendingen/{observation}', [SubmissionController::class, 'edit'])->name('submissions.edit');
         Route::put('/inzendingen/{observation}', [SubmissionController::class, 'update'])->name('submissions.update');
         Route::post('/momenten/{observation}/unpublish', [AdminDashboardController::class, 'unpublish'])->name('unpublish');
+        Route::get('/esg-rapporten', [EsgReportController::class, 'index'])->name('esg-reports.index');
+        Route::get('/esg-rapporten/{partnerSlug}', [EsgReportController::class, 'show'])->name('esg-reports.show');
+        Route::get('/esg-rapporten/{partnerSlug}/pdf', [EsgReportController::class, 'pdf'])->name('esg-reports.pdf');
     });
 });

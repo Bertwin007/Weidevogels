@@ -187,6 +187,7 @@
                         <a href="{{ route('admin.dashboard') }}">Beheer</a>
                         <a href="{{ route('admin.callcenter') }}">Callcenter</a>
                         <a href="{{ route('admin.submissions.index') }}">Inzendingen</a>
+                        <a href="{{ route('admin.esg-reports.index') }}">ESG-rapporten</a>
                     @endif
                     <form action="{{ route('logout') }}" method="post" style="display:inline">
                         @csrf

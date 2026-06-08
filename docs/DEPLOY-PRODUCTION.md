@@ -75,7 +75,14 @@ MySQL-gegevens blijven bewaard in `.env` (script overschrijft ze niet meer).
 | `public/vendor/autoload.php` | `bash scripts/plesk-deploy.sh` (composer install) |
 | Git conflict | `git fetch origin && git reset --hard origin/main` |
 
+## ESG-rapporten (admin)
+
+Na deploy: **Beheer → ESG-rapporten**. PDF gebruikt `barryvdh/laravel-dompdf` (via `composer install` in `plesk-deploy.sh`).
+
+Partner-metadata (pakket, m², habitat): `config/esg.php` → `partners['bedrijfs-slug']`.
+
 ## Test
 
 - https://greidefugels.nl
-- https://greidefugels.nl/upload
+- https://greidefugels.nl/gezondheid
+- https://greidefugels.nl/admin/esg-rapporten (ingelogd als admin)

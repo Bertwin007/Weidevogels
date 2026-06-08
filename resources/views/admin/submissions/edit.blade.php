@@ -11,6 +11,14 @@
         · status: {{ \App\Support\ObservationLabels::status($observation->statusValue()) }}
     </p>
 
+    @if($observation->isPublished() && filled($observation->guest_name))
+        @php $partnerSlug = \App\Support\PartnerSlug::fromCompany($observation->guest_name); @endphp
+        <p style="margin:0 0 1.25rem;display:flex;flex-wrap:wrap;gap:0.75rem">
+            <a class="btn" href="{{ route('admin.esg-reports.show', ['partnerSlug' => $partnerSlug, 'season' => (int) now()->year]) }}" target="_blank" rel="noopener">ESG-rapport preview</a>
+            <a class="btn btn-secondary" href="{{ route('admin.esg-reports.pdf', ['partnerSlug' => $partnerSlug, 'season' => (int) now()->year]) }}">ESG-rapport PDF</a>
+        </p>
+    @endif
+
     @if($errors->any())
         <div class="alert alert-error">
             @foreach($errors->all() as $error)
