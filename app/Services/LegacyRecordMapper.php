@@ -60,16 +60,53 @@ class LegacyRecordMapper
      */
     public static function annotationAttributes(array $attributes): array
     {
+        $storyLine = trim((string) ($attributes['story_line'] ?? ''));
+        $caption = isset($attributes['caption']) ? trim((string) $attributes['caption']) : null;
+        $species = trim((string) ($attributes['species'] ?? ''));
+        $isPublishable = (bool) ($attributes['is_publishable'] ?? true);
+
         if (Schema::hasColumn('annotations', 'count')) {
             $attributes['count'] = self::parseCount($attributes['count_label'] ?? '1');
         }
 
-        if (Schema::hasColumn('annotations', 'youth_story_line') && ! empty($attributes['story_line'])) {
-            $attributes['youth_story_line'] = $attributes['story_line'];
+        if (Schema::hasColumn('annotations', 'title') && empty($attributes['title'])) {
+            $attributes['title'] = Str::limit($storyLine, 120, '') ?: Str::limit($species, 120, 'Moment');
         }
 
-        if (Schema::hasColumn('annotations', 'public_story') && ! empty($attributes['story_line'])) {
-            $attributes['public_story'] = $attributes['story_line'];
+        if (Schema::hasColumn('annotations', 'story') && empty($attributes['story'])) {
+            $attributes['story'] = ($caption !== null && $caption !== '') ? $caption : $storyLine;
+        }
+
+        if (Schema::hasColumn('annotations', 'publishable') && ! array_key_exists('publishable', $attributes)) {
+            $attributes['publishable'] = $isPublishable;
+        }
+
+        if (Schema::hasColumn('annotations', 'youth_line') && empty($attributes['youth_line'])) {
+            $attributes['youth_line'] = $storyLine;
+        }
+
+        if (Schema::hasColumn('annotations', 'youth_story_line') && $storyLine !== '') {
+            $attributes['youth_story_line'] = $storyLine;
+        }
+
+        if (Schema::hasColumn('annotations', 'public_story') && $storyLine !== '') {
+            $attributes['public_story'] = $storyLine;
+        }
+
+        if (Schema::hasColumn('annotations', 'annotated_at') && empty($attributes['annotated_at'])) {
+            $attributes['annotated_at'] = now();
+        }
+
+        if (Schema::hasColumn('annotations', 'quality_score') && ! array_key_exists('quality_score', $attributes)) {
+            $attributes['quality_score'] = 3;
+        }
+
+        if (Schema::hasColumn('annotations', 'is_highlight') && ! array_key_exists('is_highlight', $attributes)) {
+            $attributes['is_highlight'] = false;
+        }
+
+        if (Schema::hasColumn('annotations', 'sponsor_hook') && empty($attributes['sponsor_hook'])) {
+            $attributes['sponsor_hook'] = '';
         }
 
         if (! empty($attributes['annotator_id']) && Schema::hasColumn('annotations', 'user_id')) {
