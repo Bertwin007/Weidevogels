@@ -4,14 +4,15 @@ namespace App\Services;
 
 use App\Models\Observation;
 use App\Support\PartnerSlug;
-use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class EsgBewijsReportService
 {
     /**
-     * @return list<array{slug: string, company: string, published: int, project: ?string, latest: ?string}>
+     * @return list<array{slug: string, company: string, published: int, project: ?string, latest: ?string, email: ?string}>
      */
     public function listPartners(?int $season = null): array
     {
@@ -34,6 +35,7 @@ class EsgBewijsReportService
                     'published' => $group->count(),
                     'project' => $latest?->project?->name,
                     'latest' => $latest?->published_at?->format('d-m-Y'),
+                    'email' => $this->partnerEmail($company),
                 ];
             })
             ->sortBy('company')
@@ -41,7 +43,7 @@ class EsgBewijsReportService
             ->all();
     }
 
-  public function resolveCompany(string $partnerSlug): ?string
+    public function resolveCompany(string $partnerSlug): ?string
     {
         return Observation::query()
             ->whereNotNull('guest_name')
@@ -104,7 +106,7 @@ class EsgBewijsReportService
                 'partnerSince' => $partnerSince,
             ],
             'area' => [
-                'name' => $project?->name ?? 'Ljippelân',
+                'name' => $partnerConfig['area_name'] ?? $project?->name ?? 'Ljippelân',
                 'subtitle' => $areaSubtitle,
                 'ha' => $areaHa,
                 'description' => $project?->description,
@@ -127,6 +129,40 @@ class EsgBewijsReportService
             'share' => $this->buildShareText($company, $adoptedM2, $totals, $speciesRows),
             'observation_ids' => $current->pluck('id')->all(),
         ];
+    }
+
+    public function partnerEmail(string $company): ?string
+    {
+        $slug = PartnerSlug::fromCompany($company);
+        $configEmail = config("esg.partners.{$slug}.email");
+
+        if (filled($configEmail)) {
+            return (string) $configEmail;
+        }
+
+        return Observation::query()
+            ->published()
+            ->where('guest_name', $company)
+            ->whereNotNull('guest_email')
+            ->where('guest_email', '!=', '')
+            ->latest('published_at')
+            ->value('guest_email');
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function renderPdf(array $data): PDF
+    {
+        return Pdf::loadView('reports.bewijs-rapport', [
+            'data' => $data,
+            'preview' => false,
+        ])->setPaper('a4');
+    }
+
+    public function pdfFilename(string $partnerSlug, int $season): string
+    {
+        return sprintf('biodiversiteits-bewijs-%s-%d.pdf', $partnerSlug, $season);
     }
 
     /**

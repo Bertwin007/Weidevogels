@@ -79,7 +79,9 @@ MySQL-gegevens blijven bewaard in `.env` (script overschrijft ze niet meer).
 
 Na deploy: **Beheer → ESG-rapporten**. PDF gebruikt `barryvdh/laravel-dompdf` (via `composer install` in `plesk-deploy.sh`).
 
-Partner-metadata (pakket, m², habitat): `config/esg.php` → `partners['bedrijfs-slug']`.
+Partner-metadata (pakket, m², habitat, e-mail): `config/esg.php` → `partners['bedrijfs-slug']`.
+
+Versturen naar partner: stel `MAIL_MAILER=smtp` in `.env` (standaard is `log` — dan verschijnt de mail in `storage/logs/laravel.log`). Verzendlog: `storage/logs/esg-report-deliveries.log`.
 
 ## Test
 

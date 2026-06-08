@@ -56,5 +56,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/esg-rapporten', [EsgReportController::class, 'index'])->name('esg-reports.index');
         Route::get('/esg-rapporten/{partnerSlug}', [EsgReportController::class, 'show'])->name('esg-reports.show');
         Route::get('/esg-rapporten/{partnerSlug}/pdf', [EsgReportController::class, 'pdf'])->name('esg-reports.pdf');
+        Route::post('/esg-rapporten/{partnerSlug}/verstuur', [EsgReportController::class, 'send'])->name('esg-reports.send');
     });
 });

@@ -13,9 +13,16 @@
 
     @if($observation->isPublished() && filled($observation->guest_name))
         @php $partnerSlug = \App\Support\PartnerSlug::fromCompany($observation->guest_name); @endphp
-        <p style="margin:0 0 1.25rem;display:flex;flex-wrap:wrap;gap:0.75rem">
-            <a class="btn" href="{{ route('admin.esg-reports.show', ['partnerSlug' => $partnerSlug, 'season' => (int) now()->year]) }}" target="_blank" rel="noopener">ESG-rapport preview</a>
-            <a class="btn btn-secondary" href="{{ route('admin.esg-reports.pdf', ['partnerSlug' => $partnerSlug, 'season' => (int) now()->year]) }}">ESG-rapport PDF</a>
+        @php $esgSeason = (int) now()->year; $esgEmail = app(\App\Services\EsgBewijsReportService::class)->partnerEmail($observation->guest_name); @endphp
+        <p style="margin:0 0 1.25rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
+            <a class="btn" href="{{ route('admin.esg-reports.show', ['partnerSlug' => $partnerSlug, 'season' => $esgSeason]) }}" target="_blank" rel="noopener">ESG-rapport preview</a>
+            <a class="btn btn-secondary" href="{{ route('admin.esg-reports.pdf', ['partnerSlug' => $partnerSlug, 'season' => $esgSeason]) }}">ESG-rapport PDF</a>
+            @include('components.esg-report-send-form', [
+                'partnerSlug' => $partnerSlug,
+                'season' => $esgSeason,
+                'email' => $esgEmail,
+                'compact' => false,
+            ])
         </p>
     @endif
 

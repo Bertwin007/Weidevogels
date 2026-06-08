@@ -76,7 +76,13 @@
 <body>
 @if($preview ?? false)
 <div class="toolbar">
-    <a href="{{ route('admin.esg-reports.pdf', ['partnerSlug' => \App\Support\PartnerSlug::fromCompany($d['partner']['company']), 'season' => $d['report']['season']]) }}">PDF downloaden</a>
+    <a href="{{ route('admin.esg-reports.pdf', ['partnerSlug' => $partnerSlug ?? \App\Support\PartnerSlug::fromCompany($d['partner']['company']), 'season' => $d['report']['season']]) }}">PDF downloaden</a>
+    @include('components.esg-report-send-form', [
+        'partnerSlug' => $partnerSlug ?? \App\Support\PartnerSlug::fromCompany($d['partner']['company']),
+        'season' => $d['report']['season'],
+        'email' => $partnerEmail ?? null,
+        'compact' => false,
+    ])
     <a href="{{ route('admin.esg-reports.index', ['season' => $d['report']['season']]) }}" style="background:var(--green)">← Terug naar beheer</a>
     <span>Geverifieerd biodiversiteits-bewijs · {{ $d['report']['nr'] }}</span>
 </div>

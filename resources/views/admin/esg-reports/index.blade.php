@@ -8,6 +8,14 @@
     <h1>ESG biodiversiteits-bewijs</h1>
     <p class="lead">Genereer per bedrijfspartner een geverifieerd biodiversiteits-rapport (HTML + PDF) op basis van gepubliceerde Greide-scans en expertannotatie.</p>
 
+    @if($errors->any())
+        <div class="alert alert-error">
+            @foreach($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
+
     <form method="get" class="card card-body" style="margin-bottom:1.25rem">
         <label for="season">Seizoen (jaar)</label>
         <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:end">
@@ -31,6 +39,7 @@
                 <thead>
                     <tr>
                         <th>Bedrijf</th>
+                        <th>E-mail</th>
                         <th>Gebied</th>
                         <th>Gepubliceerd</th>
                         <th>Laatste moment</th>
@@ -41,6 +50,7 @@
                     @foreach($partners as $partner)
                         <tr>
                             <td><strong>{{ $partner['company'] }}</strong></td>
+                            <td>{{ $partner['email'] ?? '—' }}</td>
                             <td>{{ $partner['project'] ?? '—' }}</td>
                             <td>{{ $partner['published'] }}</td>
                             <td>{{ $partner['latest'] ?? '—' }}</td>
@@ -48,6 +58,13 @@
                                 <a href="{{ route('admin.esg-reports.show', ['partnerSlug' => $partner['slug'], 'season' => $season]) }}" target="_blank" rel="noopener">Preview</a>
                                 ·
                                 <a href="{{ route('admin.esg-reports.pdf', ['partnerSlug' => $partner['slug'], 'season' => $season]) }}">PDF</a>
+                                ·
+                                @include('components.esg-report-send-form', [
+                                    'partnerSlug' => $partner['slug'],
+                                    'season' => $season,
+                                    'email' => $partner['email'],
+                                    'compact' => true,
+                                ])
                             </td>
                         </tr>
                     @endforeach
