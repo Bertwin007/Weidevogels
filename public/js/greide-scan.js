@@ -100,6 +100,7 @@
                 species,
                 live: false,
                 story_line: demoStoryLine(species),
+                caption: demoCaption(species),
                 behavior: 'Waarneming op greideland met broedzorg en foerageren.',
                 season: null,
             };
@@ -109,6 +110,7 @@
             media,
             species: scanResult.species,
             story_line: scanResult.story_line || null,
+            caption: scanResult.caption || null,
             behavior: scanResult.behavior || null,
             season: scanResult.season || null,
             live: scanResult.live,
@@ -128,6 +130,7 @@
                 media: null,
                 species,
                 story_line: demoStoryLine(species),
+                caption: demoCaption(species),
                 behavior: 'Waarneming op greideland met broedzorg en foerageren.',
                 season: null,
                 live: false,
@@ -176,6 +179,7 @@
         return {
             live: !!data.live,
             story_line: data.story_line || null,
+            caption: data.caption || null,
             behavior: data.behavior || null,
             season: data.season || null,
             species: (data.species || []).map((species) => ({
@@ -195,6 +199,12 @@
         return `Een mooi moment op het Friese greideland: ${lead} laten zien dat het hier leeft.`;
     }
 
+    function demoCaption(species) {
+        const names = species.map((item) => `${item.nl}${item.count > 1 ? ` (${item.count}×)` : ''}`).join(', ');
+        return `Op deze foto uit het Friese greideland zijn onder meer ${names} waargenomen. `
+            + 'Het beeld laat zien dat actief beheerd greideland een thuis blijft voor weidevogels — waardevol biodiversiteitsbewijs voor partners en het werk van Agrarisch Natuurfonds Fryslân.';
+    }
+
     function demoSpecies() {
         return [
             { nl: 'Grutto', fy: 'Skries', count: 3, conf: 96 },
@@ -205,7 +215,7 @@
     }
 
     function finishScan(scan) {
-        const { species, live, isDemo, story_line: storyLine, behavior, season } = scan;
+        const { species, live, isDemo, story_line: storyLine, caption, behavior, season } = scan;
         drop.classList.remove('scanning');
         drawBoxes(species.length);
         const total = species.reduce((sum, item) => sum + (item.count || 1), 0);
@@ -237,6 +247,14 @@
           storyLine
               ? `<div class="story-line"><span class="eyebrow">AI-verhaalregel</span><p>${escapeHtml(storyLine)}</p>${
                     storyLine.length ? `<span class="meta">${storyLine.length}/200 tekens</span>` : ''
+                }</div>`
+              : ''
+      }
+
+      ${
+          caption
+              ? `<div class="caption-block"><span class="eyebrow">AI-toelichting</span><p>${escapeHtml(caption)}</p>${
+                    caption.length ? `<span class="meta">${caption.length} tekens</span>` : ''
                 }</div>`
               : ''
       }
@@ -318,6 +336,7 @@
                         confidence: item.conf ?? 80,
                     })),
                     story_line: scan.story_line || null,
+                    caption: scan.caption || null,
                     behavior: scan.behavior || null,
                     season: scan.season || null,
                 }),

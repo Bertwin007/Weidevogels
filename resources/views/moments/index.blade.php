@@ -12,7 +12,7 @@
     @endif
 
     @if($moments->isEmpty())
-        <p>Nog geen momenten. <a href="{{ route('upload.create') }}">Deel de eerste foto</a>.</p>
+        <p>Nog geen momenten. <a href="{{ route('home') }}#scan">Start de eerste Greide-scan</a>.</p>
     @else
         <div class="grid-moments">
             @foreach($moments as $moment)

@@ -21,7 +21,7 @@
 
         <div style="margin-top:2rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
             <a class="btn btn-donate" href="{{ route('donate.moment', $observation) }}">Steun dit greideland</a>
-            <a class="btn btn-secondary" href="{{ route('upload.create') }}">Deel ook een foto</a>
+            <a class="btn btn-secondary" href="{{ route('home') }}#scan">Doe ook een Greide-scan</a>
             @include('components.observation-delete-form', [
                 'observation' => $observation,
                 'action' => route('moments.destroy', $observation),

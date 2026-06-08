@@ -24,6 +24,7 @@ class PartnerScanSubmissionService
         ?string $storyLine = null,
         ?string $behavior = null,
         ?string $season = null,
+        ?string $caption = null,
     ): Observation {
         $project = Project::findLjippelan();
 
@@ -50,14 +51,14 @@ class PartnerScanSubmissionService
             throw new \RuntimeException('Foto opslaan mislukt.');
         }
 
-        $ai = $this->mapSpeciesToAiFields($species, $live, $storyLine, $behavior, $season);
+        $ai = $this->mapSpeciesToAiFields($species, $live, $storyLine, $behavior, $season, $caption);
 
         $attributes = LegacyRecordMapper::observationAttributes([
             'guest_name' => $companyName,
             'guest_email' => $companyEmail,
             'photo_path' => $path,
             'contributor_type' => 'business',
-            'contributor_note' => 'B2B Greide-scan via /ondernemers',
+            'contributor_note' => 'Greide-scan via greidefugels.nl',
             'status' => 'pending',
             'source' => 'partner_scan',
             'mime_type' => $mime,
@@ -92,6 +93,7 @@ class PartnerScanSubmissionService
         ?string $storyLine = null,
         ?string $behavior = null,
         ?string $season = null,
+        ?string $caption = null,
     ): array {
         $normalized = collect($species)
             ->filter(fn (array $row) => filled($row['nl'] ?? null))
@@ -131,15 +133,26 @@ class PartnerScanSubmissionService
                 200
             );
 
+        $seasonText = filled($season) ? $this->limitText($season, 60) : $this->seasonFromMonth((int) now()->format('n'));
+
+        $captionText = filled($caption)
+            ? $this->limitText($caption, 2000)
+            : $this->limitText(
+                "Op deze foto uit het Friese greideland in het {$seasonText} zijn onder meer {$speciesLabel} waargenomen. "
+                ."{$behaviorText} Dit moment laat zien dat actief beheerd greideland een thuis blijft voor weidevogels.",
+                2000
+            );
+
         return [
             'species' => $speciesLabel,
             'count' => $totalBirds,
             'behavior' => $behaviorText,
-            'season' => filled($season) ? $this->limitText($season, 60) : $this->seasonFromMonth((int) now()->format('n')),
+            'season' => $seasonText,
             'confidence' => $avgConfidence,
             'notes' => [
                 'species' => $normalized,
                 'story_line' => $storyLineText,
+                'caption' => $captionText,
                 'provider' => $live ? 'gemini' : 'demo',
                 'live' => $live,
                 'scan_type' => 'partner',

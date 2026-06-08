@@ -11,6 +11,7 @@ class GreideScanService
      * @return array{
      *     species: list<array{nl: string, fy: string, count: int, confidence: int}>,
      *     story_line: ?string,
+     *     caption: ?string,
      *     behavior: ?string,
      *     season: ?string,
      *     live: bool,
@@ -121,6 +122,7 @@ class GreideScanService
         return [
             'species' => $parsed['species'],
             'story_line' => $parsed['story_line'],
+            'caption' => $parsed['caption'],
             'behavior' => $parsed['behavior'],
             'season' => $parsed['season'],
             'live' => true,
@@ -132,6 +134,7 @@ class GreideScanService
      * @return array{
      *     species: list<array{nl: string, fy: string, count: int, confidence: int}>,
      *     story_line: ?string,
+     *     caption: ?string,
      *     behavior: ?string,
      *     season: ?string
      * }
@@ -144,7 +147,7 @@ class GreideScanService
         $json = json_decode($content, true);
 
         if (! is_array($json)) {
-            return ['species' => [], 'story_line' => null, 'behavior' => null, 'season' => null];
+            return ['species' => [], 'story_line' => null, 'caption' => null, 'behavior' => null, 'season' => null];
         }
 
         $rows = $json['species'] ?? [];
@@ -180,6 +183,7 @@ class GreideScanService
         }
 
         $storyLine = $this->limitedText($json['story_line'] ?? $json['story'] ?? null, 200);
+        $caption = $this->limitedText($json['caption'] ?? $json['toelichting'] ?? null, 2000);
         $behavior = $this->limitedText($json['behavior'] ?? null, 160);
         $season = $this->limitedText($json['season'] ?? null, 60);
 
@@ -187,9 +191,14 @@ class GreideScanService
             $storyLine = $this->fallbackStoryLine($species);
         }
 
+        if ($caption === null && $species !== []) {
+            $caption = $this->fallbackCaption($species, $behavior, $season);
+        }
+
         return [
             'species' => $species,
             'story_line' => $storyLine,
+            'caption' => $caption,
             'behavior' => $behavior,
             'season' => $season,
         ];
@@ -206,12 +215,14 @@ Antwoord UITSLUITEND met geldig JSON:
   "species":[{"nl":"Nederlandse naam","fy":"Friese naam","count":1,"confidence":0.92}],
   "behavior":"kort gedrag in het Nederlands, max 160 tekens",
   "season":"Lente, Zomer, Herfst of Winter",
-  "story_line":"warm publiek verhaal in het Nederlands, STRIKT max 200 tekens inclusief spaties"
+  "story_line":"warm publiek verhaal in het Nederlands, STRIKT max 200 tekens inclusief spaties",
+  "caption":"langere toelichting in het Nederlands, 300-800 tekens, beschrijf soorten, gedrag, omgeving en waarom dit biodiversiteitsbewijs is; max 2000 tekens"
 }
 
 Regels:
 - confidence tussen 0 en 1
 - story_line MOET ≤200 tekens zijn — tel je tekens, één korte zin
+- caption is de uitgebreide toelichting (niet hetzelfde als story_line), max 2000 tekens
 - behavior max 160 tekens
 - Lege species-lijst alleen als er echt geen weidevogels zichtbaar zijn
 - Geen markdown, geen uitleg
@@ -227,6 +238,21 @@ PROMPT;
         $line = "Een mooi moment op het Friese greideland: {$lead} laten zien dat het hier leeft.";
 
         return $this->limitedText($line, 200) ?? $line;
+    }
+
+    /**
+     * @param  list<array{nl: string, fy: string, count: int, confidence: int}>  $species
+     */
+    private function fallbackCaption(array $species, ?string $behavior, ?string $season): string
+    {
+        $names = collect($species)->map(fn (array $row) => $row['nl'].($row['count'] > 1 ? " ({$row['count']}×)" : ''))->implode(', ');
+        $seasonText = $season ? " in het {$season}" : '';
+        $behaviorText = $behavior ? " Gedrag: {$behavior}." : '';
+
+        $text = "Op deze foto uit het Friese greideland{$seasonText} zijn onder meer {$names} waargenomen.{$behaviorText} "
+            .'Dit moment laat zien dat actief beheerd greideland een thuis blijft voor weidevogels — waardevol bewijs voor biodiversiteit en het werk van Agrarisch Natuurfonds Fryslân.';
+
+        return $this->limitedText($text, 2000) ?? $text;
     }
 
     private function limitedText(mixed $value, int $max): ?string
@@ -311,11 +337,15 @@ PROMPT;
             ['nl' => 'Scholekster', 'fy' => 'Bonte wile', 'count' => 1, 'confidence' => 84],
         ];
 
+        $behavior = 'Waarneming op greideland met broedzorg en foerageren.';
+        $season = $this->seasonFromMonth((int) date('n'));
+
         return [
             'species' => $species,
             'story_line' => $this->fallbackStoryLine($species),
-            'behavior' => 'Waarneming op greideland met broedzorg en foerageren.',
-            'season' => $this->seasonFromMonth((int) date('n')),
+            'caption' => $this->fallbackCaption($species, $behavior, $season),
+            'behavior' => $behavior,
+            'season' => $season,
             'live' => false,
             'notes' => $notes,
         ];

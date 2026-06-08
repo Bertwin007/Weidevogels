@@ -176,9 +176,8 @@
         <div class="site-header-inner">
             <a class="brand" href="{{ route('home') }}">Greidefugels</a>
             <nav>
+                <a href="{{ route('home') }}#scan">Greide-scan</a>
                 <a href="{{ route('moments.index') }}">Momenten</a>
-                <a href="{{ route('ondernemers') }}">Voor bedrijven</a>
-                <a href="{{ route('upload.create') }}">Deel foto</a>
                 <a href="{{ route('donate') }}">Steun ANF</a>
                 @auth
                     @if(auth()->user()->isAnnotator())
