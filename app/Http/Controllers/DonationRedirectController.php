@@ -52,7 +52,7 @@ class DonationRedirectController extends Controller
         $url = config('greidefugels.donation_url');
 
         if (! is_string($url) || $url === '') {
-            $url = 'https://www.agrarischnatuurfondsfryslan.nl/steun';
+            $url = 'https://agrarischnatuurfondsfryslan.nl/donateur-worden/';
         }
 
         if ($observation === null) {

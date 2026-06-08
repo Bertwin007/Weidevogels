@@ -27,6 +27,6 @@ QUEUE_CONNECTION=sync
 
 MAIL_MAILER=log
 
-ANF_DONATION_URL=https://www.agrarischnatuurfondsfryslan.nl/steun?utm_source=greidefugels&utm_medium=moment&utm_campaign=weidevogels
+ANF_DONATION_URL=https://agrarischnatuurfondsfryslan.nl/donateur-worden/?utm_source=greidefugels&utm_medium=moment&utm_campaign=weidevogels
 
 VITE_APP_NAME="${APP_NAME}"
