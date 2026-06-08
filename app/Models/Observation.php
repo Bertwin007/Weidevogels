@@ -91,11 +91,6 @@ class Observation extends Model
         ]);
     }
 
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
-
     public function getPhotoUrlAttribute(): string
     {
         $path = $this->attributes['photo_path'] ?? $this->attributes['image_path'] ?? null;
