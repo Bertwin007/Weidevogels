@@ -19,17 +19,17 @@
             <p>{{ $observation->annotation->caption }}</p>
         @endif
 
-        <p style="margin-top:2rem">
+        <div style="margin-top:2rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
             <a class="btn btn-donate" href="{{ route('donate.moment', $observation) }}">Steun dit greideland</a>
-            <a class="btn btn-secondary" href="{{ route('upload.create') }}" style="margin-left:0.5rem">Deel ook een foto</a>
+            <a class="btn btn-secondary" href="{{ route('upload.create') }}">Deel ook een foto</a>
             @include('components.observation-delete-form', [
                 'observation' => $observation,
                 'action' => route('moments.destroy', $observation),
                 'label' => 'Verwijder moment',
                 'class' => 'btn btn-secondary',
-                'style' => 'margin-left:0.5rem;color:#7f1d1d;border-color:#ffb3b3',
+                'style' => 'color:#7f1d1d;border-color:#ffb3b3',
             ])
-        </p>
+        </div>
     </article>
 </div>
 @endsection

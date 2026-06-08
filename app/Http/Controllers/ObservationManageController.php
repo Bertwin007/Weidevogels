@@ -13,7 +13,16 @@ class ObservationManageController extends Controller
         $this->authorize('delete', $observation);
 
         $wasPublished = $observation->isPublished();
-        $observation->purge();
+
+        try {
+            $observation->purge();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->withErrors([
+                'delete' => 'Verwijderen mislukt: '.$e->getMessage(),
+            ]);
+        }
 
         $redirect = $wasPublished
             ? route('moments.index')
