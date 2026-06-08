@@ -22,6 +22,7 @@ class HealthController extends Controller
             'sessions_writable' => is_writable(storage_path('framework/sessions')),
             'views_writable' => is_writable(storage_path('framework/views')),
             'public_storage_link' => is_link(public_path('storage')) || is_dir(public_path('storage')),
+            'public_storage_is_symlink' => is_link(public_path('storage')),
             'public_storage_target' => is_link(public_path('storage')) ? readlink(public_path('storage')) : null,
             'pending_uploads' => 0,
             'pending_photos' => [],

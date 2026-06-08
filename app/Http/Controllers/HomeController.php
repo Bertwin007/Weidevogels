@@ -20,8 +20,11 @@ class HomeController extends Controller
                 ->published()
                 ->with(['annotation', 'project'])
                 ->latest('published_at')
-                ->limit(3)
-                ->get();
+                ->limit(12)
+                ->get()
+                ->filter(fn (Observation $observation) => $observation->photoExistsOnDisk())
+                ->take(3)
+                ->values();
 
             $stats = [
                 'moments' => Observation::published()->count(),

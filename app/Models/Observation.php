@@ -189,7 +189,7 @@ class Observation extends Model
         }
 
         if ($this->photoExistsOnDisk()) {
-            return Storage::disk('public')->url($path);
+            return route('media.observation', $this);
         }
 
         return asset('storage/'.$path);

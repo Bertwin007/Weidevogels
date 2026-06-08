@@ -14,7 +14,7 @@
             @foreach($moments as $moment)
                 @if($moment->slug)
                 <a href="{{ route('moments.show', $moment) }}" class="card moment-card" style="text-decoration:none;color:inherit">
-                    <img src="{{ $moment->photo_url }}" alt="">
+                    @include('components.moment-photo', ['moment' => $moment])
                     <div class="card-body">
                         <h3>{{ $moment->annotation?->story_line }}</h3>
                         <p>{{ $moment->annotation?->species }} · {{ $moment->project?->name ?? 'Ljippelân' }}</p>

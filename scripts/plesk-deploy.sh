@@ -59,8 +59,8 @@ fi
 mkdir -p storage/app/public/observations
 mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs
 
-STORAGE_LINK="public/storage"
-STORAGE_TARGET="../storage/app/public"
+STORAGE_LINK="$(pwd)/public/storage"
+STORAGE_TARGET="$(pwd)/storage/app/public"
 
 if [[ -e "$STORAGE_LINK" && ! -L "$STORAGE_LINK" ]]; then
   rm -rf "$STORAGE_LINK"
