@@ -26,7 +26,11 @@
                             <td>{{ $item->id }}</td>
                             <td>{{ $item->project?->name ?? '—' }}</td>
                             <td>{{ $item->created_at->format('d-m-Y H:i') }}</td>
-                            <td><a href="{{ route('annotate.edit', $item) }}">Annoteren →</a></td>
+                            <td>
+                                <a href="{{ route('annotate.edit', $item) }}">Annoteren →</a>
+                                ·
+                                @include('components.observation-delete-form', ['observation' => $item])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

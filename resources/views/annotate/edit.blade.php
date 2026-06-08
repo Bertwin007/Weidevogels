@@ -61,5 +61,14 @@
         <button type="submit" class="btn">Opslaan</button>
         <a class="btn btn-secondary" href="{{ route('annotate.index') }}" style="margin-left:0.5rem">Terug</a>
     </form>
+
+    <p style="margin-top:1rem">
+        @include('components.observation-delete-form', [
+            'observation' => $observation,
+            'label' => 'Foto definitief verwijderen',
+            'class' => 'btn btn-secondary',
+            'style' => 'color:#7f1d1d;border-color:#ffb3b3',
+        ])
+    </p>
 </div>
 @endsection

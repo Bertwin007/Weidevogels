@@ -29,6 +29,8 @@ class DashboardController extends Controller
 
     public function unpublish(Observation $observation): RedirectResponse
     {
+        $this->authorize('unpublish', $observation);
+
         $observation->unpublish();
 
         return back()->with('success', 'Moment van de site gehaald.');

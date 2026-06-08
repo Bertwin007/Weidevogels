@@ -19,6 +19,13 @@
         <p style="margin-top:2rem">
             <a class="btn btn-donate" href="{{ route('donate.moment', $observation) }}">Steun dit greideland</a>
             <a class="btn btn-secondary" href="{{ route('upload.create') }}" style="margin-left:0.5rem">Deel ook een foto</a>
+            @include('components.observation-delete-form', [
+                'observation' => $observation,
+                'action' => route('moments.destroy', $observation),
+                'label' => 'Verwijder moment',
+                'class' => 'btn btn-secondary',
+                'style' => 'margin-left:0.5rem;color:#7f1d1d;border-color:#ffb3b3',
+            ])
         </p>
     </article>
 </div>

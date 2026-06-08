@@ -33,11 +33,15 @@
                             @if($observation->isPublished() && $observation->slug)
                                 <a href="{{ route('moments.show', $observation) }}">Bekijk</a>
                                 ·
-                                <form action="{{ route('admin.unpublish', $observation) }}" method="post" style="display:inline">
-                                    @csrf
-                                    <button type="submit" style="background:none;border:none;color:#1b4332;cursor:pointer;text-decoration:underline">Offline</button>
-                                </form>
+                                @can('unpublish', $observation)
+                                    <form action="{{ route('admin.unpublish', $observation) }}" method="post" style="display:inline">
+                                        @csrf
+                                        <button type="submit" style="background:none;border:none;color:#1b4332;cursor:pointer;text-decoration:underline">Offline</button>
+                                    </form>
+                                    ·
+                                @endcan
                             @endif
+                            @include('components.observation-delete-form', ['observation' => $observation])
                         </td>
                     </tr>
                 @endforeach

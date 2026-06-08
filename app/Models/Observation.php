@@ -229,4 +229,33 @@ class Observation extends Model
             'status' => ObservationStatus::Unpublished->value,
         ]);
     }
+
+    public function purge(): void
+    {
+        foreach ($this->storagePaths() as $path) {
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+        }
+
+        $this->delete();
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function storagePaths(): array
+    {
+        $paths = [];
+
+        foreach (['photo_path', 'image_path', 'thumbnail_path', 'share_card_path'] as $column) {
+            $normalized = self::normalizeStoragePath($this->attributes[$column] ?? null);
+
+            if ($normalized !== null) {
+                $paths[] = $normalized;
+            }
+        }
+
+        return array_values(array_unique($paths));
+    }
 }
