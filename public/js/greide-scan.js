@@ -227,7 +227,7 @@
       <div style="font-size:.85rem;color:var(--muted);font-weight:600">Soortenrijkdom-score</div>
       <div class="scorebar"><i id="sb"></i></div>
       <div class="statusline"><span class="dot"></span> ${
-          live ? 'Live AI-herkenning via greidefugels.nl' : 'Voorbeeldscan (live-verbinding niet beschikbaar)'
+          live ? 'Live AI-herkenning via Greidefûgels.nl' : 'Voorbeeldscan (live-verbinding niet beschikbaar)'
       } · daarna geverifieerd door onze experts</div>
 
       ${
@@ -256,7 +256,7 @@
           ${behavior ? `<div class="kv" style="grid-column:1/-1"><span>Gedrag</span>${escapeHtml(behavior)}</div>` : ''}
           ${season ? `<div class="kv"><span>Seizoen</span>${escapeHtml(season)}</div>` : ''}
         </div>
-        <div class="foot"><span>Methode: AI-beeldherkenning + expertannotatie · herkomst vastgelegd</span><span>Greidefugels.nl · ANF</span></div>
+        <div class="foot"><span>Methode: AI-beeldherkenning + expertannotatie · herkomst vastgelegd</span><span>Greidefûgels.nl · ANF</span></div>
       </div>
       <div class="field">
         <input id="coName" placeholder="Bedrijfsnaam *" required>

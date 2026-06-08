@@ -58,7 +58,7 @@ class PartnerScanSubmissionService
             'guest_email' => $companyEmail,
             'photo_path' => $path,
             'contributor_type' => 'business',
-            'contributor_note' => 'Greide-scan via greidefugels.nl',
+            'contributor_note' => 'Greide-scan via Greidefûgels.nl',
             'status' => 'pending',
             'source' => 'partner_scan',
             'mime_type' => $mime,

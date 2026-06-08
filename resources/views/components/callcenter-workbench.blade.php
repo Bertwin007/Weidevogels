@@ -36,6 +36,6 @@
     @endif
 
     <div class="scriptbox">
-        <b>Belscript-suggestie:</b> "Goedemiddag, u spreekt met <i>[agent]</i> van Greidefugels. Ik bel omdat onze laatste Greide-scan op <b>úw</b> gebied <i>[gebied]</i> <b>[belreden]</b> liet zien — een mooi moment om met uw team langs te komen en het vast te leggen voor uw biodiversiteits-bewijs. Zal ik een datum in het broedseizoen voor u reserveren?"
+        <b>Belscript-suggestie:</b> "Goedemiddag, u spreekt met <i>[agent]</i> van Greidefûgels. Ik bel omdat onze laatste Greide-scan op <b>úw</b> gebied <i>[gebied]</i> <b>[belreden]</b> liet zien — een mooi moment om met uw team langs te komen en het vast te leggen voor uw biodiversiteits-bewijs. Zal ik een datum in het broedseizoen voor u reserveren?"
     </div>
 </div>

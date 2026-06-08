@@ -1,4 +1,4 @@
-# Greidefugels / Weidevogels — plan v2
+# Greidefûgels / Weidevogels — plan v2
 
 MVP-ontwerp: **foto uploaden → annotatie → publiceren → donatie stimuleren**.
 

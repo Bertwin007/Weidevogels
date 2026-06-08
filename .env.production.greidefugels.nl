@@ -1,4 +1,4 @@
-APP_NAME="Greidefugels"
+APP_NAME="Greidefûgels"
 APP_ENV=production
 APP_KEY=
 APP_DEBUG=false

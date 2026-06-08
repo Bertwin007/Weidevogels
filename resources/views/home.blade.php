@@ -1,9 +1,9 @@
 @extends('layouts.partner')
 
-@section('title', 'Greidefugels')
+@section('title', 'Greidefûgels')
 
 @section('content')
-<div class="note">Greidefugels.nl · Agrarisch Natuurfonds Fryslân · De Greide-scan is hoe u een greidemoment deelt en verifieert</div>
+<div class="note">Greidefûgels.nl · Agrarisch Natuurfonds Fryslân · De Greide-scan is hoe u een greidemoment deelt en verifieert</div>
 
 <header class="partner-header">
     <div class="wrap nav">
@@ -14,7 +14,7 @@
                     <path d="M30 14c4-3 9-3 11 0-3 2-8 2-11 0z" fill="#d98a2b"/>
                 </svg>
             </span>
-            <span>Greidefugels<small>Weidevogels · Agrarisch Natuurfonds Fryslân</small></span>
+            <span>Greidefûgels<small>Weidevogels · Agrarisch Natuurfonds Fryslân</small></span>
         </a>
         <div class="nav-right">
             <div class="nav-links nav-links--public">
@@ -208,7 +208,7 @@
 <footer class="partner-footer">
     <div class="wrap">
         <div class="foot">
-            <div style="font-weight:700;color:#fff">Greidefugels · Agrarisch Natuurfonds Fryslân</div>
+            <div style="font-weight:700;color:#fff">Greidefûgels · Agrarisch Natuurfonds Fryslân</div>
             <div style="display:flex;gap:1.2rem;font-size:.9rem">
                 <a href="#scan">Greide-scan</a>
                 <a href="{{ route('moments.index') }}">Momenten</a>

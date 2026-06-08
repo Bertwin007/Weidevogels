@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Greidefugels') — Agrarisch Natuurfonds Fryslân</title>
-    <meta name="description" content="@yield('meta_description', 'Weidevogels en greideland in Fryslân — Agrarisch Natuurfonds Fryslân.')">
+    <title>@yield('title', 'Greidefûgels') — Agrarisch Natuurfonds Fryslân</title>
+    <meta name="description" content="@yield('meta_description', 'Greidefûgels en greideland in Fryslân — Agrarisch Natuurfonds Fryslân.')">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         * { box-sizing: border-box; }
@@ -174,7 +174,7 @@
 <body>
     <header class="site-header">
         <div class="site-header-inner">
-            <a class="brand" href="{{ route('home') }}">Greidefugels</a>
+            <a class="brand" href="{{ route('home') }}">Greidefûgels</a>
             <nav>
                 <a href="{{ route('home') }}#scan">Greide-scan</a>
                 <a href="{{ route('moments.index') }}">Momenten</a>
