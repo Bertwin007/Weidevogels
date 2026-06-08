@@ -25,7 +25,7 @@
                         <tr>
                             <td>{{ $item->id }}</td>
                             <td>{{ $item->project?->name ?? '—' }}</td>
-                            <td>{{ $item->created_at->format('d-m-Y H:i') }}</td>
+                            <td>@include('components.formatted-datetime', ['value' => $item->created_at, 'showTime' => true])</td>
                             <td>
                                 <a href="{{ route('annotate.edit', $item) }}">Annoteren →</a>
                                 ·

@@ -7,6 +7,7 @@ APP_URL=https://greidefugels.nl
 APP_LOCALE=nl
 APP_FALLBACK_LOCALE=nl
 APP_FAKER_LOCALE=nl_NL
+APP_TIMEZONE=Europe/Amsterdam
 
 LOG_CHANNEL=stack
 LOG_STACK=single

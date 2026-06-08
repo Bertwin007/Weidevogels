@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\SubmissionController;
 use App\Http\Controllers\AnnotateController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DonationRedirectController;
@@ -42,6 +43,9 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/inzendingen', [SubmissionController::class, 'index'])->name('submissions.index');
+        Route::get('/inzendingen/{observation}', [SubmissionController::class, 'edit'])->name('submissions.edit');
+        Route::put('/inzendingen/{observation}', [SubmissionController::class, 'update'])->name('submissions.update');
         Route::post('/momenten/{observation}/unpublish', [AdminDashboardController::class, 'unpublish'])->name('unpublish');
     });
 });

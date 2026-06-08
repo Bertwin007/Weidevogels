@@ -1,10 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Admin')
+@section('title', 'Beheer')
 
 @section('content')
 <div class="container">
     <h1>Beheer</h1>
+    <p class="lead">Overzicht van het platform Agrarisch Natuurfonds Fryslân.</p>
 
     <div class="stats">
         <div class="stat"><strong>{{ $stats['pending'] }}</strong> wacht op annotatie</div>
@@ -12,14 +13,19 @@
         <div class="stat"><strong>{{ $stats['donations'] }}</strong> donatieklicks</div>
     </div>
 
-    <h2>Alle momenten</h2>
+    <p style="margin:1.5rem 0">
+        <a class="btn" href="{{ route('admin.submissions.index') }}">Alle inzendingen beheren →</a>
+    </p>
+
+    <h2>Laatste inzendingen</h2>
     <div class="card">
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Nr.</th>
                     <th>Status</th>
                     <th>Verhaal</th>
+                    <th>Ingezonden</th>
                     <th></th>
                 </tr>
             </thead>
@@ -27,16 +33,18 @@
                 @foreach($observations as $observation)
                     <tr>
                         <td>{{ $observation->id }}</td>
-                        <td><span class="badge">{{ $observation->statusValue() }}</span></td>
+                        <td><span class="badge">{{ \App\Support\ObservationLabels::status($observation->statusValue()) }}</span></td>
                         <td>{{ $observation->annotation?->story_line ?? '—' }}</td>
+                        <td>@include('components.formatted-datetime', ['value' => $observation->created_at, 'showTime' => true])</td>
                         <td>
+                            <a href="{{ route('admin.submissions.edit', $observation) }}">Bewerken</a>
                             @if($observation->isPublished() && $observation->slug)
-                                <a href="{{ route('moments.show', $observation) }}">Bekijk</a>
+                                · <a href="{{ route('moments.show', $observation) }}">Bekijk</a>
                                 ·
                                 @can('unpublish', $observation)
                                     <form action="{{ route('admin.unpublish', $observation) }}" method="post" style="display:inline">
                                         @csrf
-                                        <button type="submit" style="background:none;border:none;color:#1b4332;cursor:pointer;text-decoration:underline">Offline</button>
+                                        <button type="submit" style="background:none;border:none;color:#1b4332;cursor:pointer;text-decoration:underline">Offline halen</button>
                                     </form>
                                     ·
                                 @endcan

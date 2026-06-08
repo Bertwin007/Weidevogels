@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Home')
+@section('title', 'Startpagina')
 
 @section('content')
 <section class="hero">

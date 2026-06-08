@@ -23,7 +23,7 @@
                         <div class="card-body">
                             <h3>{{ $moment->annotation?->story_line }}</h3>
                             <p>{{ $moment->annotation?->species }} · {{ $moment->project?->name ?? 'Ljippelân' }}</p>
-                            <p class="meta">{{ $moment->published_at?->format('d F Y') }}</p>
+                            <p class="meta">@include('components.formatted-datetime', ['value' => $moment->published_at, 'date' => 'j F Y', 'showTime' => false])</p>
                         </div>
                     </a>
                     @can('delete', $moment)

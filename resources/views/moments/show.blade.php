@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <article>
-        <p class="meta">{{ $observation->project?->name ?? 'Ljippelân' }} · {{ $observation->published_at?->format('d F Y') }}</p>
+        <p class="meta">{{ $observation->project?->name ?? 'Ljippelân' }} · @include('components.formatted-datetime', ['value' => $observation->published_at, 'date' => 'j F Y', 'showTime' => false])</p>
         <h1>{{ $observation->annotation?->story_line }}</h1>
 
         @include('components.moment-photo', [

@@ -183,7 +183,8 @@
                         <a href="{{ route('annotate.index') }}">Annoteren</a>
                     @endif
                     @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}">Admin</a>
+                        <a href="{{ route('admin.dashboard') }}">Beheer</a>
+                        <a href="{{ route('admin.submissions.index') }}">Inzendingen</a>
                     @endif
                     <form action="{{ route('logout') }}" method="post" style="display:inline">
                         @csrf
@@ -202,6 +203,15 @@
         @endif
         @if(session('info'))
             <div class="container"><div class="alert alert-info">{{ session('info') }}</div></div>
+        @endif
+        @if($errors->any())
+            <div class="container">
+                <div class="alert alert-error">
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            </div>
         @endif
         @yield('content')
     </main>
