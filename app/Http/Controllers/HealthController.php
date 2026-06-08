@@ -53,6 +53,9 @@ class HealthController extends Controller
             if (Schema::hasTable('annotations')) {
                 $checks['annotation_columns'] = Schema::getColumnListing('annotations');
             }
+            if (Schema::hasTable('donation_clicks')) {
+                $checks['donation_click_columns'] = Schema::getColumnListing('donation_clicks');
+            }
         } catch (\Throwable $e) {
             $checks['db_error'] = $e->getMessage();
         }

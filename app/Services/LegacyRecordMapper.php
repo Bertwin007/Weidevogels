@@ -127,6 +127,53 @@ class LegacyRecordMapper
      * @param  array<string, mixed>  $attributes
      * @return array<string, mixed>
      */
+    public static function donationClickAttributes(array $attributes, ?Observation $observation = null): array
+    {
+        if ($observation !== null && ! array_key_exists('observation_id', $attributes)) {
+            $attributes['observation_id'] = $observation->id;
+        }
+
+        if (
+            $observation !== null
+            && Schema::hasColumn('donation_clicks', 'project_id')
+            && ! array_key_exists('project_id', $attributes)
+        ) {
+            $attributes['project_id'] = $observation->project_id;
+        }
+
+        $hash = $attributes['ip_hash'] ?? null;
+        $ipAddress = $attributes['ip_address'] ?? null;
+        $userAgent = $attributes['user_agent'] ?? null;
+
+        unset($attributes['ip_hash'], $attributes['ip_address'], $attributes['user_agent']);
+
+        if ($hash !== null && Schema::hasColumn('donation_clicks', 'ip_hash')) {
+            $attributes['ip_hash'] = $hash;
+        }
+
+        if ($ipAddress !== null && Schema::hasColumn('donation_clicks', 'ip_address')) {
+            $attributes['ip_address'] = $ipAddress;
+        }
+
+        if ($userAgent !== null && Schema::hasColumn('donation_clicks', 'user_agent')) {
+            $attributes['user_agent'] = $userAgent;
+        }
+
+        if (Schema::hasColumn('donation_clicks', 'clicked_at') && empty($attributes['clicked_at'])) {
+            $attributes['clicked_at'] = now();
+        }
+
+        if (Schema::hasColumn('donation_clicks', 'source') && empty($attributes['source'])) {
+            $attributes['source'] = $observation ? 'moment' : 'general';
+        }
+
+        return self::filterColumns('donation_clicks', $attributes);
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
     private static function filterColumns(string $table, array $attributes): array
     {
         $columns = Schema::getColumnListing($table);
