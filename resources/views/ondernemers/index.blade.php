@@ -28,7 +28,7 @@
     </div>
 </header>
 
-<div id="greide-scan-app" data-scan-url="{{ $scanUrl }}" data-area-name="Ljippelân Workum">
+<div id="greide-scan-app" data-scan-url="{{ $scanUrl }}" data-submit-url="{{ $submitUrl }}" data-area-name="Ljippelân Workum">
 
 <div id="publicView">
 

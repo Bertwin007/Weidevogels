@@ -146,9 +146,3 @@
     .partner-page .qrow.head { display: none; }
 }
 
-@media print {
-    .partner-header, .partner-footer, .partner-page .note, .partner-page .hero-cta, .partner-page .viewtog { display: none !important; }
-    .partner-page * { visibility: hidden; }
-    .partner-page .proof, .partner-page .proof * { visibility: visible; }
-    .partner-page .proof { position: absolute; left: 0; top: 0; width: 100%; }
-}

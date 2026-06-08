@@ -3,7 +3,10 @@
     if (!root) return;
 
     const scanUrl = root.dataset.scanUrl;
+    const submitUrl = root.dataset.submitUrl;
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+    let currentScan = null;
 
     const pV = document.getElementById('publicView');
     const aV = document.getElementById('agentView');
@@ -50,6 +53,7 @@
     resetBtn?.addEventListener('click', resetScan);
 
     function resetScan() {
+        currentScan = null;
         drop.classList.remove('scanning');
         dropInner.style.display = 'block';
         [...drop.querySelectorAll('img.preview,.box')].forEach((node) => node.remove());
@@ -93,14 +97,30 @@
         if (!scanResult.species || !scanResult.species.length) {
             scanResult = { species: demoSpecies(), live: false };
         }
-        finishScan(scanResult.species, scanResult.live);
+        currentScan = {
+            base64,
+            media,
+            species: scanResult.species,
+            live: scanResult.live,
+            isDemo: false,
+        };
+        finishScan(currentScan);
     }
 
     function runDemoNoPhoto() {
         const svg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23bfe0ea'/%3E%3Ccircle cx='330' cy='60' r='30' fill='%23f0c45a'/%3E%3Cpath d='M0 180 Q120 150 240 180 T400 172 V300 H0Z' fill='%239bb277'/%3E%3Cpath d='M0 220 Q140 195 300 220 T400 215 V300 H0Z' fill='%237a9a55'/%3E%3C/svg%3E";
         showPreview(svg);
         startScanning();
-        setTimeout(() => finishScan(demoSpecies(), false), 1700);
+        setTimeout(() => {
+            currentScan = {
+                base64: null,
+                media: null,
+                species: demoSpecies(),
+                live: false,
+                isDemo: true,
+            };
+            finishScan(currentScan);
+        }, 1700);
     }
 
     function showPreview(src) {
@@ -159,7 +179,8 @@
         ];
     }
 
-    function finishScan(species, live) {
+    function finishScan(scan) {
+        const { species, live, isDemo } = scan;
         drop.classList.remove('scanning');
         drawBoxes(species.length);
         const total = species.reduce((sum, item) => sum + (item.count || 1), 0);
@@ -174,6 +195,9 @@
             .join('');
         const now = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
         const areaName = root.dataset.areaName || 'Ljippelân Workum';
+        const submitHint = isDemo
+            ? '<p class="statusline" style="margin-top:0.75rem">Upload een echte foto om in te zenden — de voorbeeldscan wordt niet opgeslagen.</p>'
+            : '<p class="statusline" style="margin-top:0.75rem">Na inzenden gaat de scan naar onze experts en verschijnt hij in de belwachtrij.</p>';
 
         results.innerHTML = `
       <div style="font-weight:700;color:var(--green-d);font-size:1.05rem">${species.length} soort(en) herkend · ${total} vogels</div>
@@ -195,9 +219,12 @@
         <div class="foot"><span>Methode: AI-beeldherkenning + expertannotatie · herkomst vastgelegd</span><span>Greidefugels.nl · ANF</span></div>
       </div>
       <div class="field">
-        <input id="coName" placeholder="Vul uw bedrijfsnaam in voor de kaart">
-        <button type="button" class="btn btn--green" id="printProof" style="font-size:.9rem">Bewijs opslaan (PDF)</button>
+        <input id="coName" placeholder="Bedrijfsnaam *" required>
+        <input id="coEmail" type="email" placeholder="E-mail (optioneel)">
+        <button type="button" class="btn btn--green" id="submitProof" style="font-size:.9rem" ${isDemo ? 'disabled' : ''}>Inzenden voor verificatie</button>
       </div>
+      <div id="submitStatus"></div>
+      ${submitHint}
     `;
 
         requestAnimationFrame(() => {
@@ -210,7 +237,73 @@
         coName?.addEventListener('input', () => {
             if (proofCompany) proofCompany.textContent = coName.value || '— vul hieronder in —';
         });
-        document.getElementById('printProof')?.addEventListener('click', () => window.print());
+
+        document.getElementById('submitProof')?.addEventListener('click', () => submitScan(scan));
+    }
+
+    async function submitScan(scan) {
+        const status = document.getElementById('submitStatus');
+        const button = document.getElementById('submitProof');
+        const companyName = document.getElementById('coName')?.value?.trim();
+        const companyEmail = document.getElementById('coEmail')?.value?.trim();
+
+        if (scan.isDemo || !scan.base64) {
+            if (status) status.innerHTML = '<p class="statusline" style="color:#b06d1c">Upload eerst een echte foto.</p>';
+            return;
+        }
+
+        if (!companyName) {
+            if (status) status.innerHTML = '<p class="statusline" style="color:#b06d1c">Vul een bedrijfsnaam in.</p>';
+            return;
+        }
+
+        if (button) {
+            button.disabled = true;
+            button.textContent = 'Bezig met inzenden…';
+        }
+
+        try {
+            const response = await fetch(submitUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': csrf,
+                },
+                body: JSON.stringify({
+                    image: scan.base64,
+                    media: scan.media,
+                    company_name: companyName,
+                    company_email: companyEmail || null,
+                    live: scan.live,
+                    species: scan.species.map((item) => ({
+                        nl: item.nl,
+                        fy: item.fy || null,
+                        count: item.count || 1,
+                        confidence: item.conf ?? 80,
+                    })),
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Inzenden mislukt');
+            }
+
+            if (status) {
+                status.innerHTML = `<div class="res-empty" style="margin-top:12px;border-color:#cfe0c8;background:#eaf2e6;color:var(--green-d)">${data.message}</div>`;
+            }
+            if (button) button.textContent = 'Ingezonden ✓';
+        } catch (error) {
+            if (status) {
+                status.innerHTML = `<p class="statusline" style="color:#b06d1c">${error.message || 'Inzenden mislukt. Probeer het opnieuw.'}</p>`;
+            }
+            if (button) {
+                button.disabled = false;
+                button.textContent = 'Inzenden voor verificatie';
+            }
+        }
     }
 
     function drawBoxes(count) {

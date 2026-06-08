@@ -36,6 +36,7 @@ class OndernemersController extends Controller
             'queue' => $queue,
             'kpis' => $kpis,
             'scanUrl' => route('api.scan'),
+            'submitUrl' => route('api.scan.submit'),
         ]);
     }
 

@@ -19,6 +19,7 @@ Route::get('/gezondheid', HealthController::class)->name('health');
 Route::get('/', HomeController::class)->name('home');
 Route::get('/ondernemers', [OndernemersController::class, 'index'])->name('ondernemers');
 Route::post('/api/scan', [GreideScanController::class, 'store'])->middleware('throttle:12,1')->name('api.scan');
+Route::post('/api/scan/inzenden', [GreideScanController::class, 'submit'])->middleware('throttle:6,1')->name('api.scan.submit');
 Route::get('/momenten', [MomentController::class, 'index'])->name('moments.index');
 Route::get('/media/observations/{observation}', [MediaController::class, 'observation'])->name('media.observation');
 Route::get('/momenten/{observation:slug}', [MomentController::class, 'show'])->name('moments.show');
