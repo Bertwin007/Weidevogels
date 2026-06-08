@@ -34,11 +34,23 @@
 .partner-page .logo .mark { width: 38px; height: 38px; border-radius: 50%; background: var(--green); display: grid; place-items: center; }
 .partner-page .logo .mark svg { width: 24px; height: 24px; }
 .partner-page .logo small { display: block; font-weight: 600; font-size: 0.58rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+.partner-page .nav-right { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: flex-end; }
 .partner-page .nav-links { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; font-size: 0.9rem; color: var(--muted); }
 .partner-page .nav-links a:hover { color: var(--green-d); }
-.partner-page .nav-links .nav-login { font-weight: 600; color: var(--green); }
-.partner-page .nav-links .nav-logout { display: inline; margin: 0; }
-.partner-page .nav-links .nav-logout button {
+.partner-page .nav-auth { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; font-size: 0.9rem; color: var(--muted); }
+.partner-page .nav-auth a:hover { color: var(--green-d); }
+.partner-page .nav-login {
+    font-weight: 600;
+    color: #fff;
+    background: var(--green);
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+.partner-page .nav-login:hover { background: var(--green-d); color: #fff; }
+.partner-page .nav-logout { display: inline; margin: 0; }
+.partner-page .nav-logout button {
     background: none;
     border: none;
     padding: 0;
@@ -47,7 +59,7 @@
     color: var(--muted);
     cursor: pointer;
 }
-.partner-page .nav-links .nav-logout button:hover { color: var(--green-d); }
+.partner-page .nav-logout button:hover { color: var(--green-d); }
 
 .partner-page section { padding: 64px 0; }
 .partner-page .section-head { max-width: 62ch; }
@@ -141,6 +153,8 @@
     .partner-page .scan-wrap,
     .partner-page .pkg-grid { grid-template-columns: 1fr; }
     .partner-page .steps { grid-template-columns: 1fr 1fr; }
-    .partner-page .nav-links { display: none; }
+    .partner-page .nav { height: auto; min-height: 70px; padding: 10px 0; }
+    .partner-page .nav-links--public { display: none; }
+    .partner-page .nav-right { margin-left: auto; }
 }
 
