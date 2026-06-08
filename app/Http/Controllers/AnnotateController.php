@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\AnalyzeObservationPhoto;
 use App\Models\Observation;
 use App\Services\AiPreScanService;
 use App\Services\LegacyRecordMapper;
@@ -57,17 +58,19 @@ class AnnotateController extends Controller
             return redirect()->route('annotate.index');
         }
 
-        $suggestion = $scanner->analyze($observation->fresh());
+        if (! $scanner->usesRealVision()) {
+            $suggestion = $scanner->analyze($observation->fresh());
 
-        if ($suggestion->isEmpty() && $suggestion->notes) {
-            return back()->withErrors(['ai' => $suggestion->notes]);
+            if ($suggestion->isEmpty() && $suggestion->notes) {
+                return back()->withErrors(['ai' => $suggestion->notes]);
+            }
+
+            return back()->with('success', 'Basisvoorstel gemaakt. Voor hogere nauwkeurigheid: stel GOOGLE_AI_API_KEY in.');
         }
 
-        $message = $suggestion->isHeuristicSuggestion()
-            ? 'Basisvoorstel gemaakt. Voor hogere nauwkeurigheid: stel GOOGLE_AI_API_KEY in.'
-            : 'AI-voorstel vernieuwd ('.($suggestion->confidence ?? '?').'% zekerheid). Controleer en pas zo nodig aan.';
+        AnalyzeObservationPhoto::dispatch($observation->fresh())->afterResponse();
 
-        return back()->with('success', $message);
+        return back()->with('success', 'AI-analyse gestart. Vernieuw deze pagina over ~10 seconden.');
     }
 
     public function photo(Observation $observation): BinaryFileResponse

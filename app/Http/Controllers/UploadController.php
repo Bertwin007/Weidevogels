@@ -60,7 +60,7 @@ class UploadController extends Controller
             $observation = $project->observations()->create($attributes);
 
             if (config('greidefugels.ai.enabled')) {
-                AnalyzeObservationPhoto::dispatch($observation);
+                AnalyzeObservationPhoto::dispatch($observation)->afterResponse();
             }
         } catch (\Throwable $e) {
             Log::error('Upload mislukt: '.$e->getMessage(), ['exception' => $e]);

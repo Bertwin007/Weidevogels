@@ -27,15 +27,21 @@ class GeminiVisionAnalyzer implements VisionAnalyzer
         $model = config('greidefugels.ai.gemini.model');
         $apiKey = config('greidefugels.ai.gemini.api_key');
 
-        $response = Http::timeout(60)
-            ->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}", [
+        $imageData = $this->encodedImagePayload($absoluteImagePath, $mime);
+
+        $response = Http::timeout(90)
+            ->withHeaders([
+                'x-goog-api-key' => $apiKey,
+                'Content-Type' => 'application/json',
+            ])
+            ->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent", [
                 'contents' => [[
                     'parts' => [
                         ['text' => $this->visionPrompt($contributorNote)],
                         [
                             'inline_data' => [
-                                'mime_type' => $mime,
-                                'data' => base64_encode((string) file_get_contents($absoluteImagePath)),
+                                'mime_type' => $imageData['mime'],
+                                'data' => $imageData['data'],
                             ],
                         ],
                     ],
@@ -47,16 +53,61 @@ class GeminiVisionAnalyzer implements VisionAnalyzer
             ]);
 
         if (! $response->successful()) {
+            $detail = data_get($response->json(), 'error.message', $response->body());
             Log::warning('Gemini vision mislukt', ['status' => $response->status(), 'body' => $response->body()]);
 
             return new AiAnnotationSuggestion(
                 provider: 'gemini',
-                notes: 'Google AI-analyse mislukt ('.$response->status().').',
+                notes: 'Google AI-analyse mislukt ('.$response->status().'): '.$this->truncate($detail, 200),
             );
         }
 
         $text = data_get($response->json(), 'candidates.0.content.parts.0.text', '');
 
         return $this->parseSuggestion((string) $text, 'gemini');
+    }
+
+    /**
+     * @return array{mime: string, data: string}
+     */
+    private function encodedImagePayload(string $absoluteImagePath, string $mime): array
+    {
+        $contents = (string) file_get_contents($absoluteImagePath);
+        $maxBytes = 4 * 1024 * 1024;
+
+        if (strlen($contents) <= $maxBytes || ! function_exists('imagecreatefromstring')) {
+            return ['mime' => $mime, 'data' => base64_encode($contents)];
+        }
+
+        $image = @imagecreatefromstring($contents);
+
+        if ($image === false) {
+            return ['mime' => $mime, 'data' => base64_encode($contents)];
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+        $scale = min(1, 1920 / max($width, 1), 1920 / max($height, 1));
+        $targetWidth = max(1, (int) round($width * $scale));
+        $targetHeight = max(1, (int) round($height * $scale));
+
+        $resized = imagecreatetruecolor($targetWidth, $targetHeight);
+        imagecopyresampled($resized, $image, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        ob_start();
+        imagejpeg($resized, null, 85);
+        $jpeg = (string) ob_get_clean();
+
+        imagedestroy($image);
+        imagedestroy($resized);
+
+        return ['mime' => 'image/jpeg', 'data' => base64_encode($jpeg)];
+    }
+
+    private function truncate(string $value, int $max): string
+    {
+        $value = trim(preg_replace('/\s+/', ' ', $value) ?? $value);
+
+        return mb_strlen($value) > $max ? mb_substr($value, 0, $max).'…' : $value;
     }
 }

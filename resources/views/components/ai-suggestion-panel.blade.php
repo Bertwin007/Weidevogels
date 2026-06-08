@@ -39,7 +39,7 @@
                 </form>
             @endif
         </p>
-        <p class="meta" style="margin-top:0.5rem">Controleer altijd het voorstel — jij beslist wat er live gaat.</p>
+        <p class="meta" style="margin-top:0.5rem">Controleer altijd het voorstel — jij beslist wat er live gaat. Na <em>Opnieuw analyseren</em> even de pagina verversen.</p>
     </div>
 
     @push('head')
