@@ -13,13 +13,15 @@ class AnnotateController extends Controller
 {
     public function index(): View
     {
+        $queueTotal = Observation::query()->pendingAnnotation()->count();
+
         $queue = Observation::query()
             ->pendingAnnotation()
             ->with('project')
             ->oldest()
             ->simplePaginate(20);
 
-        return view('annotate.index', compact('queue'));
+        return view('annotate.index', compact('queue', 'queueTotal'));
     }
 
     public function edit(Observation $observation): View|RedirectResponse

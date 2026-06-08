@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <h1>Wachtrij annotatie</h1>
-    <p class="lead">{{ $queue->total() }} foto(s) wachten op verrijking.</p>
+    <p class="lead">{{ $queueTotal }} foto(s) wachten op verrijking.</p>
 
     @if($queue->isEmpty())
         <p>Geen openstaande foto's. 🎉</p>
