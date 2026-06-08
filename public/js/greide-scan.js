@@ -95,12 +95,22 @@
             scanResult = { species: null, live: false };
         }
         if (!scanResult.species || !scanResult.species.length) {
-            scanResult = { species: demoSpecies(), live: false };
+            const species = demoSpecies();
+            scanResult = {
+                species,
+                live: false,
+                story_line: demoStoryLine(species),
+                behavior: 'Waarneming op greideland met broedzorg en foerageren.',
+                season: null,
+            };
         }
         currentScan = {
             base64,
             media,
             species: scanResult.species,
+            story_line: scanResult.story_line || null,
+            behavior: scanResult.behavior || null,
+            season: scanResult.season || null,
             live: scanResult.live,
             isDemo: false,
         };
@@ -112,10 +122,14 @@
         showPreview(svg);
         startScanning();
         setTimeout(() => {
+            const species = demoSpecies();
             currentScan = {
                 base64: null,
                 media: null,
-                species: demoSpecies(),
+                species,
+                story_line: demoStoryLine(species),
+                behavior: 'Waarneming op greideland met broedzorg en foerageren.',
+                season: null,
                 live: false,
                 isDemo: true,
             };
@@ -161,6 +175,9 @@
 
         return {
             live: !!data.live,
+            story_line: data.story_line || null,
+            behavior: data.behavior || null,
+            season: data.season || null,
             species: (data.species || []).map((species) => ({
                 nl: species.nl,
                 fy: species.fy || '',
@@ -168,6 +185,14 @@
                 conf: Math.round(species.confidence ?? 80),
             })),
         };
+    }
+
+    function demoStoryLine(species) {
+        const lead = species
+            .slice(0, 2)
+            .map((item) => item.nl)
+            .join(' en ');
+        return `Een mooi moment op het Friese greideland: ${lead} laten zien dat het hier leeft.`;
     }
 
     function demoSpecies() {
@@ -180,7 +205,7 @@
     }
 
     function finishScan(scan) {
-        const { species, live, isDemo } = scan;
+        const { species, live, isDemo, story_line: storyLine, behavior, season } = scan;
         drop.classList.remove('scanning');
         drawBoxes(species.length);
         const total = species.reduce((sum, item) => sum + (item.count || 1), 0);
@@ -208,6 +233,14 @@
           live ? 'Live AI-herkenning via greidefugels.nl' : 'Voorbeeldscan (live-verbinding niet beschikbaar)'
       } · daarna geverifieerd door onze experts</div>
 
+      ${
+          storyLine
+              ? `<div class="story-line"><span class="eyebrow">AI-verhaalregel</span><p>${escapeHtml(storyLine)}</p>${
+                    storyLine.length ? `<span class="meta">${storyLine.length}/200 tekens</span>` : ''
+                }</div>`
+              : ''
+      }
+
       <div class="proof" id="proof">
         <div class="top"><b>Biodiversiteits-bewijs</b><span class="seal">🪶</span></div>
         <div class="body">
@@ -215,6 +248,8 @@
           <div class="kv"><span>Weidegebied</span>${areaName}</div>
           <div class="kv"><span>Datum waarneming</span>${now}</div>
           <div class="kv"><span>Soorten / vogels</span>${species.length} / ${total}</div>
+          ${behavior ? `<div class="kv" style="grid-column:1/-1"><span>Gedrag</span>${escapeHtml(behavior)}</div>` : ''}
+          ${season ? `<div class="kv"><span>Seizoen</span>${escapeHtml(season)}</div>` : ''}
         </div>
         <div class="foot"><span>Methode: AI-beeldherkenning + expertannotatie · herkomst vastgelegd</span><span>Greidefugels.nl · ANF</span></div>
       </div>
@@ -282,6 +317,9 @@
                         count: item.count || 1,
                         confidence: item.conf ?? 80,
                     })),
+                    story_line: scan.story_line || null,
+                    behavior: scan.behavior || null,
+                    season: scan.season || null,
                 }),
             });
 
@@ -304,6 +342,14 @@
                 button.textContent = 'Inzenden voor verificatie';
             }
         }
+    }
+
+    function escapeHtml(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
     }
 
     function drawBoxes(count) {

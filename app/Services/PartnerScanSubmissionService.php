@@ -21,6 +21,9 @@ class PartnerScanSubmissionService
         ?string $companyEmail,
         array $species,
         bool $live,
+        ?string $storyLine = null,
+        ?string $behavior = null,
+        ?string $season = null,
     ): Observation {
         $project = Project::findLjippelan();
 
@@ -47,7 +50,7 @@ class PartnerScanSubmissionService
             throw new \RuntimeException('Foto opslaan mislukt.');
         }
 
-        $ai = $this->mapSpeciesToAiFields($species, $live);
+        $ai = $this->mapSpeciesToAiFields($species, $live, $storyLine, $behavior, $season);
 
         $attributes = LegacyRecordMapper::observationAttributes([
             'guest_name' => $companyName,
@@ -83,8 +86,13 @@ class PartnerScanSubmissionService
      * @param  list<array{nl: string, fy?: string, count?: int, confidence?: int}>  $species
      * @return array{species: string, count: int, behavior: string, season: string, confidence: int, notes: array<string, mixed>}
      */
-    private function mapSpeciesToAiFields(array $species, bool $live): array
-    {
+    private function mapSpeciesToAiFields(
+        array $species,
+        bool $live,
+        ?string $storyLine = null,
+        ?string $behavior = null,
+        ?string $season = null,
+    ): array {
         $normalized = collect($species)
             ->filter(fn (array $row) => filled($row['nl'] ?? null))
             ->map(fn (array $row) => [
@@ -112,30 +120,48 @@ class PartnerScanSubmissionService
         $totalBirds = array_sum(array_column($normalized, 'count'));
         $avgConfidence = (int) round(collect($normalized)->avg('confidence'));
 
-        $behavior = sprintf(
-            'Greide-scan: %d soort(en), %d vogel(s)',
-            count($normalized),
-            $totalBirds
-        );
+        $behaviorText = filled($behavior)
+            ? $this->limitText($behavior, 160)
+            : sprintf('Greide-scan: %d soort(en), %d vogel(s)', count($normalized), $totalBirds);
 
-        if (mb_strlen($behavior) > 160) {
-            $behavior = mb_substr($behavior, 0, 157).'…';
-        }
+        $storyLineText = filled($storyLine)
+            ? $this->limitText($storyLine, 200)
+            : $this->limitText(
+                'Een mooi moment op het Friese greideland: '.$speciesLabel.' laten zien dat het hier leeft.',
+                200
+            );
 
         return [
             'species' => $speciesLabel,
             'count' => $totalBirds,
-            'behavior' => $behavior,
-            'season' => $this->seasonFromMonth((int) now()->format('n')),
+            'behavior' => $behaviorText,
+            'season' => filled($season) ? $this->limitText($season, 60) : $this->seasonFromMonth((int) now()->format('n')),
             'confidence' => $avgConfidence,
             'notes' => [
                 'species' => $normalized,
+                'story_line' => $storyLineText,
                 'provider' => $live ? 'gemini' : 'demo',
                 'live' => $live,
                 'scan_type' => 'partner',
                 'submitted_at' => now()->toIso8601String(),
             ],
         ];
+    }
+
+    private function limitText(string $value, int $max): string
+    {
+        if (mb_strlen($value) <= $max) {
+            return $value;
+        }
+
+        $truncated = mb_substr($value, 0, $max);
+        $lastSpace = mb_strrpos($truncated, ' ');
+
+        if ($lastSpace !== false && $lastSpace > (int) ($max * 0.6)) {
+            $truncated = mb_substr($truncated, 0, $lastSpace);
+        }
+
+        return rtrim($truncated, '.,;:!?…').'…';
     }
 
     /**

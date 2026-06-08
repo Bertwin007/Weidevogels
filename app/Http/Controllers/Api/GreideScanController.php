@@ -25,6 +25,9 @@ class GreideScanController extends Controller
 
         return response()->json([
             'species' => $result['species'],
+            'story_line' => $result['story_line'],
+            'behavior' => $result['behavior'],
+            'season' => $result['season'],
             'live' => $result['live'],
             'notes' => $result['notes'],
         ]);
@@ -43,6 +46,9 @@ class GreideScanController extends Controller
             'species.*.fy' => ['nullable', 'string', 'max:120'],
             'species.*.count' => ['nullable', 'integer', 'min:1'],
             'species.*.confidence' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'story_line' => ['nullable', 'string', 'max:200'],
+            'behavior' => ['nullable', 'string', 'max:160'],
+            'season' => ['nullable', 'string', 'max:60'],
         ]);
 
         try {
@@ -53,6 +59,9 @@ class GreideScanController extends Controller
                 $validated['company_email'] ?? null,
                 $validated['species'],
                 (bool) ($validated['live'] ?? false),
+                $validated['story_line'] ?? null,
+                $validated['behavior'] ?? null,
+                $validated['season'] ?? null,
             );
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);

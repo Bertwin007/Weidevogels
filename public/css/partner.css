@@ -76,6 +76,9 @@
 .partner-page .scorebar { height: 12px; background: var(--line); border-radius: 999px; overflow: hidden; margin: 6px 0 4px; }
 .partner-page .scorebar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--green)); width: 0; transition: width 1s; }
 .partner-page .statusline { font-size: 0.82rem; color: var(--muted); margin-top: 8px; display: flex; align-items: center; gap: 8px; }
+.partner-page .story-line { margin-top: 18px; padding: 16px 18px; border-radius: 14px; background: var(--cream); border: 1px solid var(--line); }
+.partner-page .story-line p { margin: 0.45rem 0 0; color: var(--ink); font-size: 1rem; line-height: 1.55; font-style: italic; }
+.partner-page .story-line .meta { display: block; margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted); font-style: normal; }
 .partner-page .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
 .partner-page .proof { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-top: 18px; box-shadow: 0 10px 30px rgba(31, 74, 31, 0.08); }
 .partner-page .proof .top { background: var(--green); color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
