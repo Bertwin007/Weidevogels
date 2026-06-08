@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Models\Observation;
 use App\Support\PartnerSlug;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Barryvdh\DomPDF\PDF;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -147,22 +145,6 @@ class EsgBewijsReportService
             ->where('guest_email', '!=', '')
             ->latest('published_at')
             ->value('guest_email');
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    public function renderPdf(array $data): PDF
-    {
-        return Pdf::loadView('reports.bewijs-rapport', [
-            'data' => $data,
-            'preview' => false,
-        ])->setPaper('a4');
-    }
-
-    public function pdfFilename(string $partnerSlug, int $season): string
-    {
-        return sprintf('biodiversiteits-bewijs-%s-%d.pdf', $partnerSlug, $season);
     }
 
     /**

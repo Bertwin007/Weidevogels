@@ -8,6 +8,12 @@
     <h1>ESG biodiversiteits-bewijs</h1>
     <p class="lead">Genereer per bedrijfspartner een geverifieerd biodiversiteits-rapport (HTML + PDF) op basis van gepubliceerde Greide-scans en expertannotatie.</p>
 
+    @if(empty($pdfAvailable))
+        <div class="alert alert-info">
+            PDF-export is nog niet beschikbaar op deze server. Voer <code>bash scripts/plesk-deploy.sh</code> uit (installeert DomPDF via Composer).
+        </div>
+    @endif
+
     @if($errors->any())
         <div class="alert alert-error">
             @foreach($errors->all() as $error)
@@ -57,14 +63,18 @@
                             <td style="white-space:nowrap">
                                 <a href="{{ route('admin.esg-reports.show', ['partnerSlug' => $partner['slug'], 'season' => $season]) }}" target="_blank" rel="noopener">Preview</a>
                                 ·
-                                <a href="{{ route('admin.esg-reports.pdf', ['partnerSlug' => $partner['slug'], 'season' => $season]) }}">PDF</a>
-                                ·
-                                @include('components.esg-report-send-form', [
-                                    'partnerSlug' => $partner['slug'],
-                                    'season' => $season,
-                                    'email' => $partner['email'],
-                                    'compact' => true,
-                                ])
+                                @if(!empty($pdfAvailable))
+                                    <a href="{{ route('admin.esg-reports.pdf', ['partnerSlug' => $partner['slug'], 'season' => $season]) }}">PDF</a>
+                                    ·
+                                    @include('components.esg-report-send-form', [
+                                        'partnerSlug' => $partner['slug'],
+                                        'season' => $season,
+                                        'email' => $partner['email'],
+                                        'compact' => true,
+                                    ])
+                                @else
+                                    <span class="meta">PDF na deploy</span>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

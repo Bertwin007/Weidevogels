@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\EsgBewijsReportMail;
 use App\Services\EsgBewijsReportService;
 use App\Services\EsgReportDeliveryService;
+use App\Services\EsgReportPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -16,6 +17,7 @@ class EsgReportController extends Controller
 {
     public function __construct(
         private readonly EsgBewijsReportService $reports,
+        private readonly EsgReportPdfService $pdf,
         private readonly EsgReportDeliveryService $deliveryLog,
     ) {}
 
@@ -27,6 +29,7 @@ class EsgReportController extends Controller
             'season' => $season,
             'partners' => $this->reports->listPartners($season),
             'seasonOptions' => $this->seasonOptions(),
+            'pdfAvailable' => $this->pdf->isAvailable(),
         ]);
     }
 
@@ -50,8 +53,8 @@ class EsgReportController extends Controller
         $season = (int) $request->integer('season', (int) now()->year);
         $data = $this->reports->build($company, $season);
 
-        return $this->reports->renderPdf($data)
-            ->download($this->reports->pdfFilename($partnerSlug, $season));
+        return $this->pdf->render($data)
+            ->download($this->pdf->filename($partnerSlug, $season));
     }
 
     public function send(Request $request, string $partnerSlug): RedirectResponse
@@ -75,8 +78,8 @@ class EsgReportController extends Controller
         }
 
         $data = $this->reports->build($company, $season);
-        $filename = $this->reports->pdfFilename($partnerSlug, $season);
-        $pdfBinary = $this->reports->renderPdf($data)->output();
+        $filename = $this->pdf->filename($partnerSlug, $season);
+        $pdfBinary = $this->pdf->render($data)->output();
 
         Mail::to($email)->send(new EsgBewijsReportMail($data, $pdfBinary, $filename));
 
