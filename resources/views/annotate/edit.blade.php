@@ -11,7 +11,18 @@
         <p><strong>Toelichting uploader:</strong> {{ $observation->contributor_note }}</p>
     @endif
 
-    <img src="{{ $observation->photo_url }}" alt="" style="max-width:100%;border-radius:0.75rem;margin-bottom:1.5rem">
+    @if($photoUrl)
+        <img src="{{ $photoUrl }}" alt="Geüploade foto" style="max-width:100%;border-radius:0.75rem;margin-bottom:1.5rem">
+    @else
+        <div class="alert alert-error">
+            Foto niet gevonden op de server.
+            @if($observation->storedPhotoPath())
+                Pad in database: <code>{{ $observation->storedPhotoPath() }}</code>
+            @else
+                Er staat geen fotopad in de database bij dit moment.
+            @endif
+        </div>
+    @endif
 
     @if($errors->any())
         <div class="alert alert-error">

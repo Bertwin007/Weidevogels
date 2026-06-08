@@ -6,6 +6,7 @@ use App\Enums\ObservationStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Observation extends Model
@@ -91,11 +92,107 @@ class Observation extends Model
         ]);
     }
 
+    public function storedPhotoPath(): ?string
+    {
+        foreach ($this->photoPathCandidates() as $candidate) {
+            $normalized = self::normalizeStoragePath($candidate);
+
+            if ($normalized !== null) {
+                return $normalized;
+            }
+        }
+
+        return null;
+    }
+
+    public function photoExistsOnDisk(): bool
+    {
+        return $this->absolutePhotoPath() !== null;
+    }
+
+    public function absolutePhotoPath(): ?string
+    {
+        foreach ($this->photoPathCandidates() as $candidate) {
+            if (! is_string($candidate) || $candidate === '') {
+                continue;
+            }
+
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        $path = $this->storedPhotoPath();
+
+        if ($path === null) {
+            return null;
+        }
+
+        $absolute = Storage::disk('public')->path($path);
+
+        return is_file($absolute) ? $absolute : null;
+    }
+
+    /**
+     * @return list<string|null>
+     */
+    private function photoPathCandidates(): array
+    {
+        return [
+            $this->attributes['photo_path'] ?? null,
+            $this->attributes['image_path'] ?? null,
+            $this->attributes['thumbnail_path'] ?? null,
+        ];
+    }
+
+    private static function normalizeStoragePath(?string $path): ?string
+    {
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return null;
+        }
+
+        if (is_file($path)) {
+            $publicRoot = Storage::disk('public')->path('');
+
+            if (str_starts_with($path, $publicRoot)) {
+                $path = substr($path, strlen($publicRoot));
+            } else {
+                return null;
+            }
+        }
+
+        $path = ltrim($path, '/');
+
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, strlen('storage/'));
+        }
+
+        return $path !== '' ? $path : null;
+    }
+
     public function getPhotoUrlAttribute(): string
     {
-        $path = $this->attributes['photo_path'] ?? $this->attributes['image_path'] ?? null;
+        foreach ($this->photoPathCandidates() as $candidate) {
+            if (is_string($candidate) && (str_starts_with($candidate, 'http://') || str_starts_with($candidate, 'https://'))) {
+                return $candidate;
+            }
+        }
 
-        return $path ? asset('storage/'.$path) : '';
+        $path = $this->storedPhotoPath();
+
+        if ($path === null) {
+            return '';
+        }
+
+        if ($this->photoExistsOnDisk()) {
+            return Storage::disk('public')->url($path);
+        }
+
+        return asset('storage/'.$path);
     }
 
     public function getContributorLabelAttribute(): string

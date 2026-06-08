@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AnnotateController extends Controller
 {
@@ -34,7 +35,22 @@ class AnnotateController extends Controller
 
         $observation->load('project');
 
-        return view('annotate.edit', compact('observation'));
+        $photoUrl = $observation->photoExistsOnDisk()
+            ? route('annotate.photo', $observation)
+            : null;
+
+        return view('annotate.edit', compact('observation', 'photoUrl'));
+    }
+
+    public function photo(Observation $observation): BinaryFileResponse
+    {
+        $absolute = $observation->absolutePhotoPath();
+
+        abort_unless($absolute, 404);
+
+        return response()->file($absolute, [
+            'Cache-Control' => 'private, max-age=3600',
+        ]);
     }
 
     public function store(Request $request, Observation $observation): RedirectResponse

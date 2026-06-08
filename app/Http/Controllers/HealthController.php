@@ -22,7 +22,9 @@ class HealthController extends Controller
             'sessions_writable' => is_writable(storage_path('framework/sessions')),
             'views_writable' => is_writable(storage_path('framework/views')),
             'public_storage_link' => is_link(public_path('storage')) || is_dir(public_path('storage')),
+            'public_storage_target' => is_link(public_path('storage')) ? readlink(public_path('storage')) : null,
             'pending_uploads' => 0,
+            'pending_photos' => [],
             'last_error' => $this->lastErrorMessage(),
         ];
 
@@ -31,6 +33,19 @@ class HealthController extends Controller
             DB::select('select 1 as ok');
             $checks['db'] = true;
             $checks['pending_uploads'] = Observation::pendingAnnotation()->count();
+            $checks['pending_photos'] = Observation::query()
+                ->pendingAnnotation()
+                ->latest()
+                ->limit(5)
+                ->get(['id', 'photo_path', 'thumbnail_path'])
+                ->map(fn (Observation $observation) => [
+                    'id' => $observation->id,
+                    'photo_path' => $observation->getAttributes()['photo_path'] ?? null,
+                    'stored_path' => $observation->storedPhotoPath(),
+                    'file_exists' => $observation->photoExistsOnDisk(),
+                    'public_url' => $observation->photo_url,
+                ])
+                ->all();
 
             if (Schema::hasTable('observations')) {
                 $checks['observation_columns'] = Schema::getColumnListing('observations');

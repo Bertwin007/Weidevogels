@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:annotator,admin')->group(function () {
         Route::get('/annoteren', [AnnotateController::class, 'index'])->name('annotate.index');
+        Route::get('/annoteren/{observation}/foto', [AnnotateController::class, 'photo'])->name('annotate.photo');
         Route::get('/annoteren/{observation}', [AnnotateController::class, 'edit'])->name('annotate.edit');
         Route::post('/annoteren/{observation}', [AnnotateController::class, 'store'])->name('annotate.store');
     });

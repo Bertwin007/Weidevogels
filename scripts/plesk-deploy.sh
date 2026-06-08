@@ -56,17 +56,17 @@ fi
 "$PHP_BIN" artisan migrate --force
 "$PHP_BIN" artisan db:seed --force
 
-mkdir -p storage/app/public
+mkdir -p storage/app/public/observations
 mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs
 
-if [[ -L public/storage ]]; then
-  :
-elif [[ -e public/storage ]]; then
-  rm -rf public/storage
-  ln -sfn ../storage/app/public public/storage
-else
-  ln -sfn ../storage/app/public public/storage
+STORAGE_LINK="public/storage"
+STORAGE_TARGET="../storage/app/public"
+
+if [[ -e "$STORAGE_LINK" && ! -L "$STORAGE_LINK" ]]; then
+  rm -rf "$STORAGE_LINK"
 fi
+
+ln -sfn "$STORAGE_TARGET" "$STORAGE_LINK"
 
 find storage bootstrap/cache -type d -exec chmod 775 {} + 2>/dev/null || true
 find storage bootstrap/cache -type f -exec chmod 664 {} + 2>/dev/null || true
